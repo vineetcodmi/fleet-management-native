@@ -1,0 +1,7 @@
+rootProject.name = 'Fleet'
+include ':app', ':react-native-camera'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':mapmyindia-map-react-native-beta'
+project(':mapmyindia-map-react-native-beta').projectDir = new File(rootProject.projectDir, '../node_modules/mapmyindia-map-react-native-beta/android/rctmgl')
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
