@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.fleet.app-mergeDebugResources-49:/values-ha/values-ha.xml",
+            "outputFile": "com.fleet.app-mergeDebugResources-59:/values-ha/values-ha.xml",
             "map": [
                 {
                     "source": "/Users/apple/.gradle/caches/transforms-3/edbc7b00816089aa28afe6fcc937bf51/transformed/jetified-react-android-0.73.5-debug/res/values-ha/values-ha.xml",

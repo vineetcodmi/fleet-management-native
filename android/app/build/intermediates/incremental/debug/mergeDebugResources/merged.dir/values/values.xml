@@ -542,7 +542,11 @@
     </attr>
     <bool name="abc_action_bar_embed_tabs">true</bool>
     <bool name="abc_config_actionMenuItemAllCaps">true</bool>
+    <bool name="enable_system_alarm_service_default">true</bool>
+    <bool name="enable_system_foreground_service_default">true</bool>
+    <bool name="enable_system_job_service_default">false</bool>
     <bool name="mtrl_btn_textappearance_all_caps">true</bool>
+    <bool name="workmanager_test_configuration">false</bool>
     <color name="abc_decor_view_status_guard">#ff000000</color>
     <color name="abc_decor_view_status_guard_light">#ffffffff</color>
     <color name="abc_search_url_text_normal">#7fa87f</color>
@@ -562,6 +566,10 @@
     <color name="bright_foreground_inverse_material_light">@color/bright_foreground_material_dark</color>
     <color name="bright_foreground_material_dark">@android:color/white</color>
     <color name="bright_foreground_material_light">@android:color/black</color>
+    <color name="browser_actions_bg_grey">#F5F5F5</color>
+    <color name="browser_actions_divider_color">#1E000000</color>
+    <color name="browser_actions_text_color">#DE000000</color>
+    <color name="browser_actions_title_color">#646464</color>
     <color name="button_material_dark">#ff5a595b</color>
     <color name="button_material_light">#ffd6d7d7</color>
     <color name="cardview_dark_background">#FF424242</color>
@@ -985,6 +993,8 @@
     <dimen name="abc_text_size_title_material_toolbar">20dp</dimen>
     <dimen name="appcompat_dialog_background_inset">16dp</dimen>
     <dimen name="autofill_inline_suggestion_icon_size">20dp</dimen>
+    <dimen name="browser_actions_context_menu_max_width">500dp</dimen>
+    <dimen name="browser_actions_context_menu_min_padding">20dp</dimen>
     <dimen name="cardview_compat_inset_shadow">1dp</dimen>
     <dimen name="cardview_default_elevation">2dp</dimen>
     <dimen name="cardview_default_radius">2dp</dimen>
@@ -2018,6 +2028,7 @@
     <string name="common_open_on_phone">Open on phone</string>
     <string name="common_signin_button_text">Sign in</string>
     <string name="common_signin_button_text_long">Sign in with Google</string>
+    <string name="copy_toast_msg">Link copied to clipboard</string>
     <string description="Screen reader announcement for when a checkbox is on error. [CHAR LIMIT=NONE]" name="error_a11y_label">
     Error: invalid
   </string>
@@ -2025,6 +2036,10 @@
     <string name="exposed_dropdown_menu_content_description">Show dropdown menu</string>
     <string name="fab_transformation_scrim_behavior" translatable="false">com.google.android.material.transformation.FabTransformationScrimBehavior</string>
     <string name="fab_transformation_sheet_behavior" translatable="false">com.google.android.material.transformation.FabTransformationSheetBehavior</string>
+    <string name="fallback_menu_item_copy_link">Copy link</string>
+    <string name="fallback_menu_item_open_in_browser">Open in browser</string>
+    <string name="fallback_menu_item_share_link">Share link</string>
+    <string name="fcm_fallback_notification_channel_label">Miscellaneous</string>
     <string description="heading to a page or section" name="header_description">Heading</string>
     <string name="hide_bottom_view_on_scroll_behavior" translatable="false">com.google.android.material.behavior.HideBottomViewOnScrollBehavior</string>
     <string description="Content description for an icon that appears in the title area of a dialog" name="icon_content_description">Dialog Icon</string>
@@ -2032,6 +2047,10 @@
     <string description="Displays a button with an image (instead of text) that can be pressed or clicked by the user" name="imagebutton_description">Button, Image</string>
     <string name="item_view_role_description">Tab</string>
     <string description="provides an interactive reference to a resource" name="link_description">Link</string>
+    <string name="location_permission_missing_message">Looks like this app doesn\'t have location services configured. Please see OneSignal docs for more information.</string>
+    <string name="location_permission_missing_title">App Missing Permission</string>
+    <string name="location_permission_name_for_title">Location</string>
+    <string name="location_permission_settings_message">sharing your device location</string>
     <string name="m3_ref_typeface_brand_medium" translatable="false">sans-serif-medium</string>
     <string name="m3_ref_typeface_brand_regular" translatable="false">sans-serif</string>
     <string name="m3_ref_typeface_plain_medium" translatable="false">sans-serif-medium</string>
@@ -2174,11 +2193,16 @@
     <string name="mtrl_switch_track_path" translatable="false">M0,16 A16,16 0 0,1 16,0 H36 A16,16 0 0,1 36,32 H16 A16,16 0 0,1 0,16</string>
     <string description="Button text to indicate that the widget will ignore the user&apos;s selection [CHAR_LIMIT=16]" name="mtrl_timepicker_cancel">Cancel</string>
     <string description="Button text to indicate that the widget will save the user&apos;s selection [CHAR_LIMIT=16]" name="mtrl_timepicker_confirm">OK</string>
+    <string name="notification_permission_name_for_title">Notifications</string>
+    <string name="notification_permission_settings_message">Notifications</string>
     <string name="password_toggle_content_description">Show password</string>
     <string name="path_password_eye" translatable="false">M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27,-3.11 11,-7.5c-1.73,-4.39 -6,-7.5 -11,-7.5zM12,17c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5zM12,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3 3,-1.34 3,-3 -1.34,-3 -3,-3z</string>
     <string name="path_password_eye_mask_strike_through" translatable="false">M2,4.27 L19.73,22 L22.27,19.46 L4.54,1.73 L4.54,1 L23,1 L23,23 L1,23 L1,4.27 Z</string>
     <string name="path_password_eye_mask_visible" translatable="false">M2,4.27 L2,4.27 L4.54,1.73 L4.54,1.73 L4.54,1 L23,1 L23,23 L1,23 L1,4.27 Z</string>
     <string name="path_password_strike_through" translatable="false">M3.27,4.27 L19.74,20.74</string>
+    <string name="permission_not_available_message">You have previously denied %s. Please go to settings to enable.</string>
+    <string name="permission_not_available_open_settings_option">Settings</string>
+    <string name="permission_not_available_title">%s Not Available</string>
     <string description="displays the progress status for tasks that take a long time" name="progressbar_description">Progress Bar</string>
     <string description="a group of radio buttons" name="radiogroup_description">Radio Group</string>
     <string description="an interactive element inside a tablist" name="rn_tab_description">Tab</string>
@@ -13087,17 +13111,7 @@
             <flag name="start" value="0x00800003"/>
             
             <flag name="end" value="0x00800005"/>
-        </attr><attr format="dimension" name="mapbox_scaleBarMarginLeft"/><attr format="dimension" name="mapbox_scaleBarMarginTop"/><attr format="dimension" name="mapbox_scaleBarMarginRight"/><attr format="dimension" name="mapbox_scaleBarMarginBottom"/><attr format="color" name="mapbox_scaleBarTextColor"/><attr format="color" name="mapbox_scaleBarPrimaryColor"/><attr format="color" name="mapbox_scaleBarSecondaryColor"/><attr format="dimension" name="mapbox_scaleBarBorderWidth"/><attr format="dimension" name="mapbox_scaleBarHeight"/><attr format="dimension" name="mapbox_scaleBarTextBarMargin"/><attr format="dimension" name="mapbox_scaleBarTextBorderWidth"/><attr format="dimension" name="mapbox_scaleBarTextSize"/><attr format="boolean" name="mapbox_scaleBarIsMetricUnits"/><attr format="integer" name="mapbox_scaleBarRefreshInterval"/><attr format="boolean" name="mapbox_scaleBarShowTextBorder"/><attr format="float" name="mapbox_scaleBarRatio"/><attr format="boolean" name="mapbox_scaleBarUseContinuousRendering"/><attr format="boolean" name="mapbox_locationComponentEnabled"/><attr format="boolean" name="mapbox_locationComponentPulsingEnabled"/><attr format="color" name="mapbox_locationComponentPulsingColor"/><attr format="dimension" name="mapbox_locationComponentPulsingMaxRadius"/><attr format="boolean" name="mapbox_locationComponentShowAccuracyRing"/><attr format="color" name="mapbox_locationComponentAccuracyRingColor"/><attr format="color" name="mapbox_locationComponentAccuracyRingBorderColor"/><attr format="string" name="mapbox_locationComponentLayerAbove"/><attr format="string" name="mapbox_locationComponentLayerBelow"/><attr format="boolean" name="mapbox_locationComponentPuckBearingEnabled"/><attr format="enum" name="mapbox_locationComponentPuckBearing">
-          
-          <enum name="heading" value="0"/>
-          
-          <enum name="course" value="1"/>
-        </attr><attr format="enum" name="mapbox_locationComponentLocationPuck">
-          
-          <enum name="location_puck_2_d" value="0"/>
-          
-          <enum name="location_puck_3_d" value="1"/>
-        </attr><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DTopImage"/><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DBearingImage"/><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DShadowImage"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck2DScaleExpression"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck2DOpacity"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelUri"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DPosition_lon"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DPosition_lat"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelOpacity"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_x"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_y"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_z"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScaleExpression"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_lon"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_lat"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_z"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_x"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_y"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_z"/><attr format="boolean" name="mapbox_locationComponentLocationPuckLocationPuck3DModelCastShadows"/><attr format="boolean" name="mapbox_locationComponentLocationPuckLocationPuck3DModelReceiveShadows"/><attr format="enum" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScaleMode"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelEmissiveStrength"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelEmissiveStrengthExpression"/><attr format="boolean" name="mapbox_attributionEnabled"/><attr format="color" name="mapbox_attributionIconColor"/><attr name="mapbox_attributionGravity">
+        </attr><attr format="dimension" name="mapbox_scaleBarMarginLeft"/><attr format="dimension" name="mapbox_scaleBarMarginTop"/><attr format="dimension" name="mapbox_scaleBarMarginRight"/><attr format="dimension" name="mapbox_scaleBarMarginBottom"/><attr format="color" name="mapbox_scaleBarTextColor"/><attr format="color" name="mapbox_scaleBarPrimaryColor"/><attr format="color" name="mapbox_scaleBarSecondaryColor"/><attr format="dimension" name="mapbox_scaleBarBorderWidth"/><attr format="dimension" name="mapbox_scaleBarHeight"/><attr format="dimension" name="mapbox_scaleBarTextBarMargin"/><attr format="dimension" name="mapbox_scaleBarTextBorderWidth"/><attr format="dimension" name="mapbox_scaleBarTextSize"/><attr format="boolean" name="mapbox_scaleBarIsMetricUnits"/><attr format="integer" name="mapbox_scaleBarRefreshInterval"/><attr format="boolean" name="mapbox_scaleBarShowTextBorder"/><attr format="float" name="mapbox_scaleBarRatio"/><attr format="boolean" name="mapbox_scaleBarUseContinuousRendering"/><attr format="boolean" name="mapbox_attributionEnabled"/><attr format="color" name="mapbox_attributionIconColor"/><attr name="mapbox_attributionGravity">
             
             <flag name="top" value="0x30"/>
             
@@ -13191,7 +13205,17 @@
             <flag name="start" value="0x00800003"/>
             
             <flag name="end" value="0x00800005"/>
-        </attr><attr format="dimension" name="mapbox_logoMarginLeft"/><attr format="dimension" name="mapbox_logoMarginTop"/><attr format="dimension" name="mapbox_logoMarginRight"/><attr format="dimension" name="mapbox_logoMarginBottom"/><attr format="enum" name="mapbox_mapContextMode">
+        </attr><attr format="dimension" name="mapbox_logoMarginLeft"/><attr format="dimension" name="mapbox_logoMarginTop"/><attr format="dimension" name="mapbox_logoMarginRight"/><attr format="dimension" name="mapbox_logoMarginBottom"/><attr format="boolean" name="mapbox_locationComponentEnabled"/><attr format="boolean" name="mapbox_locationComponentPulsingEnabled"/><attr format="color" name="mapbox_locationComponentPulsingColor"/><attr format="dimension" name="mapbox_locationComponentPulsingMaxRadius"/><attr format="boolean" name="mapbox_locationComponentShowAccuracyRing"/><attr format="color" name="mapbox_locationComponentAccuracyRingColor"/><attr format="color" name="mapbox_locationComponentAccuracyRingBorderColor"/><attr format="string" name="mapbox_locationComponentLayerAbove"/><attr format="string" name="mapbox_locationComponentLayerBelow"/><attr format="boolean" name="mapbox_locationComponentPuckBearingEnabled"/><attr format="enum" name="mapbox_locationComponentPuckBearing">
+          
+          <enum name="heading" value="0"/>
+          
+          <enum name="course" value="1"/>
+        </attr><attr format="enum" name="mapbox_locationComponentLocationPuck">
+          
+          <enum name="location_puck_2_d" value="0"/>
+          
+          <enum name="location_puck_3_d" value="1"/>
+        </attr><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DTopImage"/><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DBearingImage"/><attr format="reference" name="mapbox_locationComponentLocationPuckLocationPuck2DShadowImage"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck2DScaleExpression"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck2DOpacity"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelUri"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DPosition_lon"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DPosition_lat"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelOpacity"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_x"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_y"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScale_z"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScaleExpression"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_lon"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_lat"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelTranslation_z"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_x"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_y"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelRotation_z"/><attr format="boolean" name="mapbox_locationComponentLocationPuckLocationPuck3DModelCastShadows"/><attr format="boolean" name="mapbox_locationComponentLocationPuckLocationPuck3DModelReceiveShadows"/><attr format="enum" name="mapbox_locationComponentLocationPuckLocationPuck3DModelScaleMode"/><attr format="float" name="mapbox_locationComponentLocationPuckLocationPuck3DModelEmissiveStrength"/><attr format="string" name="mapbox_locationComponentLocationPuckLocationPuck3DModelEmissiveStrengthExpression"/><attr format="enum" name="mapbox_mapContextMode">
             
             <enum name="unique" value="0"/>
             

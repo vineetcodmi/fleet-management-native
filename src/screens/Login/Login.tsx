@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,15 +11,18 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
-} from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { useAuth } from '../../context/Auth';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { useAuth } from "../../context/Auth";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { OneSignal } from "react-native-onesignal";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const productionData = route.params;
+  console.log(productionData, "productiondatatat");
+
   const { login, getUser, user } = useAuth();
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -35,16 +38,15 @@ const LoginScreen = ({ navigation, route }: any) => {
       if (token) {
         getUser(unitId);
         console.log(user, "userr");
-
-        navigation.replace('BottomNavigation');
+        navigation.replace("BottomNavigation");
       } else {
-        console.error('Login failed: Invalid credentials');
+        console.error("Login failed: Invalid credentials");
       }
     } catch (error) {
       setLoading(false);
       Alert.alert(
-        'Login Failed',
-        'Please check your credentials and try again.',
+        "Login Failed",
+        "Please check your credentials and try again."
       );
     }
   };
@@ -58,29 +60,32 @@ const LoginScreen = ({ navigation, route }: any) => {
   };
 
   const initialValues = {
-    userId: '',
-    unitId: '',
-    password: '',
+    userId: "",
+    unitId: "",
+    password: "",
     // userId: 'wgc',
     // unitId: 'ABN1661',
     // password: '112',
   };
 
   const validationSchema = Yup.object().shape({
-    userId: Yup.string().required('User ID is required'),
-    unitId: Yup.string().required('Unit ID is required'),
-    password: Yup.string().required('Password is required'),
+    userId: Yup.string().required("User ID is required"),
+    unitId: Yup.string().required("Unit ID is required"),
+    password: Yup.string().required("Password is required"),
   });
-
+  const handleLinkOutline = () => {
+    navigation.navigate("ServerLogin");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <ImageBackground
-          source={require('../../assets/background.png')}
+          source={require("../../assets/background.png")}
           resizeMode="cover"
-          style={styles.backgroundImage}>
+          style={styles.backgroundImage}
+        >
           <Image
-            source={require('../../assets/integraphLogo.png')}
+            source={require("../../assets/integraphLogo.png")}
             style={styles.logo}
           />
         </ImageBackground>
@@ -91,7 +96,8 @@ const LoginScreen = ({ navigation, route }: any) => {
           <Formik
             onSubmit={handleLogin}
             initialValues={initialValues}
-            validationSchema={validationSchema}>
+            validationSchema={validationSchema}
+          >
             {({
               handleChange,
               handleBlur,
@@ -105,41 +111,31 @@ const LoginScreen = ({ navigation, route }: any) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Enter user ID"
-                  onChangeText={handleChange('userId')}
-                  onBlur={handleBlur('userId')}
+                  onChangeText={handleChange("userId")}
+                  onBlur={handleBlur("userId")}
                   value={values.userId}
                 />
                 {touched.userId && errors.userId && (
                   <Text style={styles.errorText}>{errors.userId}</Text>
                 )}
-
-                <Text style={styles.label}>UNIT ID</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter unit ID"
-                  onChangeText={handleChange('unitId')}
-                  onBlur={handleBlur('unitId')}
-                  value={values.unitId}
-                />
-                {errors.unitId && touched.unitId && (
-                  <Text style={styles.errorText}>{errors.unitId}</Text>
-                )}
                 <Text style={styles.label}>PASSWORD</Text>
                 <View
                   style={{
-                    position: 'relative',
-                  }}>
+                    position: "relative",
+                  }}
+                >
                   <TextInput
                     style={styles.input}
                     placeholder="Enter password"
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
                     value={values.password}
                     secureTextEntry={!passwordVisible}
                   />
                   <TouchableOpacity
                     onPress={passwordVisibility}
-                    style={{ position: 'absolute', top: 25, right: 28 }}>
+                    style={{ position: "absolute", top: 25, right: 28 }}
+                  >
                     <MaterialIcons
                       name="remove-red-eye"
                       size={20}
@@ -149,6 +145,17 @@ const LoginScreen = ({ navigation, route }: any) => {
                 </View>
                 {touched.password && errors.password && (
                   <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+                <Text style={styles.label}>UNIT ID</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter unit ID"
+                  onChangeText={handleChange("unitId")}
+                  onBlur={handleBlur("unitId")}
+                  value={values.unitId}
+                />
+                {errors.unitId && touched.unitId && (
+                  <Text style={styles.errorText}>{errors.unitId}</Text>
                 )}
 
                 <View style={styles.row}>
@@ -169,7 +176,8 @@ const LoginScreen = ({ navigation, route }: any) => {
                 ) : (
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => handleSubmit()}>
+                    onPress={() => handleSubmit()}
+                  >
                     <Text style={styles.buttonText}>Log in</Text>
                   </TouchableOpacity>
                 )}
@@ -180,7 +188,7 @@ const LoginScreen = ({ navigation, route }: any) => {
           <View style={styles.poweredBy}>
             <Text style={styles.poweredByText}>Powered by</Text>
             <Image
-              source={require('../../assets/hexagonLogo.png')}
+              source={require("../../assets/hexagonLogo.png")}
               style={styles.hexagonLogo}
             />
           </View>
@@ -189,10 +197,17 @@ const LoginScreen = ({ navigation, route }: any) => {
             described in the info/About box.
           </Text>
           <View style={styles.versionContainer}>
-            <Text style={styles.versionText}>Versions:{productionData?.productionData?.version ?? ''}</Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Text style={styles.versionText}>
+              Versions:{productionData?.productionData?.version ?? ""}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
               <View style={styles.errorIcon}>
-                <Ionicons name="link-outline" size={20} color="#00526F" />
+                <Ionicons
+                  name="link-outline"
+                  size={20}
+                  color="#00526F"
+                  onPress={handleLinkOutline}
+                />
               </View>
               <View style={styles.errorIcon}>
                 <MaterialIcons name="error-outline" color="#00526F" size={20} />
@@ -208,7 +223,7 @@ const LoginScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   header: {
     flex: 0.2,
@@ -217,34 +232,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logo: {
-    position: 'absolute',
+    position: "absolute",
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   content: {
     flex: 0.8,
     padding: 6,
     borderTopStartRadius: 10,
     borderTopEndRadius: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     top: -20,
   },
   heading: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 17,
-    textAlign: 'center',
-    color: '#101828',
+    textAlign: "center",
+    color: "#101828",
     marginTop: 15,
   },
   form: {
     padding: 5,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 12,
     marginTop: 10,
     marginLeft: 13,
-    color: '#344054',
+    color: "#344054",
   },
   input: {
     height: 45,
@@ -252,27 +267,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 10,
     borderWidth: 1,
-    borderColor: '#00526F',
+    borderColor: "#00526F",
     borderRadius: 6,
     fontSize: 12,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginLeft: 6,
     marginRight: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 6,
   },
   rememberMe: {
-    color: 'black',
+    color: "black",
     fontSize: 13,
     marginLeft: 10,
   },
   forgotPassword: {
-    color: '#00526F',
+    color: "#00526F",
     fontSize: 13,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
   buttonContainer: {
     height: 40,
@@ -281,58 +296,58 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   poweredBy: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   poweredByText: {
-    color: '#475467',
+    color: "#475467",
   },
   hexagonLogo: {
     marginLeft: 13,
   },
   footerText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginHorizontal: 8,
     marginTop: 10,
-    color: '#475467',
+    color: "#475467",
   },
   versionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginHorizontal: 13,
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   versionText: {
-    color: '#475467',
+    color: "#475467",
   },
   errorIcon: {
     height: 36,
     width: 36,
     borderRadius: 4,
-    backgroundColor: '#F9FAFB',
-    borderColor: '#EAECF0',
+    backgroundColor: "#F9FAFB",
+    borderColor: "#EAECF0",
     borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     paddingHorizontal: 8,
     paddingVertical: 12,
     borderRadius: 6,
     marginHorizontal: 12,
-    backgroundColor: '#00526F',
-    justifyContent: 'center',
+    backgroundColor: "#00526F",
+    justifyContent: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginLeft: 12,
   },
@@ -341,9 +356,9 @@ const styles = StyleSheet.create({
     width: 36,
     borderRadius: 4,
     borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: '#00526F',
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "#00526F",
   },
 });
 

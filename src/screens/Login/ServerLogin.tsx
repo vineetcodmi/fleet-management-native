@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,70 +9,95 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-} from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useAuth} from '../../context/Auth';
-import axios from 'axios';
-import {baseUrl} from '../../config';
+} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { useAuth } from "../../context/Auth";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { baseUrl } from "../../config";
 
-const ServerLogin = ({route, navigation}: any) => {
-  const {token,user} = useAuth();
-  const [productionScannedData, setProductionScannedData] = useState('');
+const ServerLogin = ({ route, navigation }: any) => {
+  const { token, user } = useAuth();
+  const [productionScannedData, setProductionScannedData] = useState("");
   const [loading, setLoading] = useState(false);
-  const [educationScannedData, setEducationScannedData] = useState('');
+  const [educationScannedData, setEducationScannedData] = useState("");
   const serverKey = route.params?.serverKey;
-  const scannedData = route.params?.scannedData || '';
+  const scannedData = route.params?.scannedData || "";
 
   useEffect(() => {
-    if (serverKey === 'production') {
+    if (serverKey === "production") {
       setProductionScannedData(scannedData);
-    } else if (serverKey === 'education') {
+    } else if (serverKey === "education") {
       setEducationScannedData(scannedData);
     }
   }, [serverKey, scannedData]);
 
   // useEffect(() => {
-  //   console.log(token,"tokennn");
-    
   //   if (token) {
-  //     navigation.replace('BottomNavigation');
-  //   }  
-  // },[token]);
+  //     navigation.replace("BottomNavigation");
+  //   }
+  // }, [token]);
 
   const handleServerProduction = () => {
     try {
       setLoading(true);
       const toToken = `Bearer${token}`;
       axios
-        .get(baseUrl + '/cad/', {
+        .get(baseUrl + "/cad/", {
           headers: {
             Authorization: toToken,
           },
         })
-        .then(res => {
+        .then((res) => {
           const data = res.data;
-          navigation.replace('LoginScreen', {productionData: data});
+          navigation.replace("LoginScreen", { productionData: data });
         });
     } catch (error) {
       setLoading(false);
-      console.log(error, 'error to connect production url');
+      console.log(error, "error to connect production url");
     }
   };
+
+  const handleEducationServer = () => {
+    console.log("shhsghhsg");
+  };
   const handleProductionQrScanner = () => {
-    navigation.navigate('QrScanner', {serverKey: 'production'});
+    navigation.navigate("QrScanner", { serverKey: "production" });
   };
   const handleEducationQrScanner = () => {
-    navigation.navigate('QrScanner', {serverKey: 'education'});
+    navigation.navigate("QrScanner", { serverKey: "education" });
   };
+  const validationSchema = Yup.object().shape({
+    production: Yup.string()
+      .matches(
+        /^https:\/\/.*/,
+        'Production server URL must start with "https://"'
+      )
+      .required("Production server URL is required"),
+    education: Yup.string()
+      .matches(
+        /^https:\/\/.*/,
+        'Education server URL must start with "https://"'
+      )
+      .required("Education server URL is required"),
+  });
+
+  const initialValues = {
+    production: "https://",
+    education: "https://",
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../../assets/background.png')}
+        source={require("../../assets/background.png")}
         resizeMode="cover"
-        style={{flex: 0.2}}>
+        style={{ flex: 0.2 }}
+      >
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/integraphLogo.png')}
+            source={require("../../assets/integraphLogo.png")}
             style={styles.logo}
           />
         </View>
@@ -80,61 +105,105 @@ const ServerLogin = ({route, navigation}: any) => {
       <View style={styles.content}>
         <ScrollView>
           <Text style={styles.heading}>Configure Server Connections</Text>
-          <View style={styles.serverContainer}>
-            <View style={styles.serverHeader}>
-              <Text style={styles.serverHeaderText}>PRODUCTION SERVER</Text>
-              <TouchableOpacity onPress={handleProductionQrScanner}>
-                <MaterialIcons name="qr-code-scanner" size={24} />
-              </TouchableOpacity>
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter production server url"
-              value={productionScannedData}
-              onChangeText={setProductionScannedData}
-            />
-            {loading ? (
-              <ActivityIndicator color="gray" />
-            ) : (
-              <TouchableOpacity
-                disabled={!productionScannedData}
-                style={[
-                  styles.button,
-                  productionScannedData ? null : styles.disabledButton,
-                ]}
-                onPress={handleServerProduction}>
-                <Text style={styles.buttonText}>Connect to production</Text>
-              </TouchableOpacity>
+          <Formik
+            onSubmit={handleServerProduction}
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.serverContainer}>
+                <View style={styles.serverHeader}>
+                  <Text style={styles.serverHeaderText}>PRODUCTION SERVER</Text>
+                  <TouchableOpacity onPress={handleProductionQrScanner}>
+                    <MaterialIcons name="qr-code-scanner" size={24} />
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter production server url"
+                  value={values.production || productionScannedData}
+                  onChangeText={(value) => {
+                    setProductionScannedData(value);
+                    handleChange("production")(value);
+                  }}
+                  onBlur={handleBlur("production")}
+                />
+                {errors.production && touched.production && (
+                  <Text style={styles.errorText}>{errors.production}</Text>
+                )}
+
+                {loading ? (
+                  <ActivityIndicator color="gray" />
+                ) : (
+                  <TouchableOpacity
+                    disabled={
+                      !values.production &&
+                      !productionScannedData &&
+                      !errors.production
+                    }
+                    style={[
+                      styles.button,
+                      !values.production || errors.production
+                        ? styles.disabledButton
+                        : null,
+                    ]}
+                    onPress={() => handleSubmit()}
+                  >
+                    <Text style={styles.buttonText}>Connect to production</Text>
+                  </TouchableOpacity>
+                )}
+
+                <View style={styles.serverHeader}>
+                  <Text style={styles.serverHeaderText}>
+                    EDUCATION (TEST) SERVER
+                  </Text>
+                  <TouchableOpacity onPress={handleEducationQrScanner}>
+                    <MaterialIcons name="qr-code-scanner" size={24} />
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter education server url"
+                  value={values.education || educationScannedData}
+                  onChangeText={(value) => {
+                    setEducationScannedData(value);
+                    handleChange("education")(value);
+                  }}
+                  onBlur={handleBlur("education")}
+                />
+                {errors.education && touched.education && (
+                  <Text style={styles.errorText}>{errors.education}</Text>
+                )}
+                <TouchableOpacity
+                  disabled={
+                    !values.education &&
+                    !educationScannedData &&
+                    !errors.education
+                  }
+                  style={[
+                    styles.button,
+                    !values.education || errors.education
+                      ? styles.disabledButton
+                      : null,
+                  ]}
+                  // onPress={() => handleSubmit()}
+                >
+                  <Text style={styles.buttonText}>Connect to Education</Text>
+                </TouchableOpacity>
+              </View>
             )}
-          </View>
-          <View style={styles.serverContainer}>
-            <View style={styles.serverHeader}>
-              <Text style={styles.serverHeaderText}>
-                EDUCATION (TEST) SERVER
-              </Text>
-              <TouchableOpacity onPress={handleEducationQrScanner}>
-                <MaterialIcons name="qr-code-scanner" size={24} />
-              </TouchableOpacity>
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter education server url"
-              value={educationScannedData}
-              onChangeText={setEducationScannedData}
-            />
-            <TouchableOpacity
-              style={[
-                styles.button,
-                educationScannedData ? null : styles.disabledButton,
-              ]}
-              onPress={handleServerProduction}>
-              <Text style={styles.buttonText}>Connect to Education</Text>
-            </TouchableOpacity>
-          </View>
+          </Formik>
           <View style={styles.poweredByContainer}>
             <Text style={styles.poweredByText}>Powered by</Text>
             <Image
-              source={require('../../assets/hexagonLogo.png')}
+              source={require("../../assets/hexagonLogo.png")}
               style={styles.poweredByLogo}
             />
           </View>
@@ -162,16 +231,16 @@ const ServerLogin = ({route, navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   content: {
     borderTopStartRadius: 10,
     borderTopEndRadius: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     top: -20,
     flex: 0.8,
   },
@@ -179,25 +248,26 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   heading: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 17,
-    textAlign: 'center',
-    color: '#101828',
+    textAlign: "center",
+    color: "#101828",
     marginTop: 15,
   },
   serverContainer: {
     padding: 2,
   },
   serverHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 2,
     marginHorizontal: 14,
   },
   serverHeaderText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 12,
-    color: '#344054',
+    color: "#344054",
+    marginTop: 5,
   },
   input: {
     height: 83,
@@ -205,7 +275,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: '#00526F',
+    borderColor: "#00526F",
     borderRadius: 6,
   },
   button: {
@@ -214,8 +284,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 6,
     marginHorizontal: 12,
-    backgroundColor: '#00526F',
-    justifyContent: 'center',
+    backgroundColor: "#00526F",
+    justifyContent: "center",
   },
   disabledButton: {
     paddingHorizontal: 8,
@@ -224,48 +294,54 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginHorizontal: 12,
     opacity: 0.6,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   poweredByContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   poweredByText: {
-    color: '#475467',
+    color: "#475467",
   },
   poweredByLogo: {
     marginLeft: 13,
   },
   footerText: {
-    textAlign: 'center',
+    textAlign: "center",
     margin: 10,
-    color: '#475467',
+    color: "#475467",
   },
   versionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginHorizontal: 13,
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   versionText: {
-    color: '#475467',
+    color: "#475467",
   },
   errorIcon: {
     height: 45,
     width: 45,
     borderRadius: 10,
-    backgroundColor: '#F9FAFB',
-    borderColor: '#EAECF2',
+    backgroundColor: "#F9FAFB",
+    borderColor: "#EAECF2",
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginLeft: 12,
+    marginBottom: 10,
   },
 });
 

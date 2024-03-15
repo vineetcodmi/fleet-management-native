@@ -25,12 +25,16 @@ import com.mapmyindia.sdk.rctmgl.RCTMGLPackage;
 import org.reactnative.camera.RNCameraPackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
+// react-native-onesignal
+import com.onesignal.rnonesignalandroid.ReactNativeOneSignalPackage;
 // react-native-reanimated
 import com.swmansion.reanimated.ReanimatedPackage;
 // react-native-safe-area-context
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
+// react-native-sound
+import com.zmxv.RNSound.RNSoundPackage;
 // react-native-ui-lib
 import com.wix.reactnativeuilib.dynamicfont.DynamicFontPackage;
 import com.wix.reactnativeuilib.highlighterview.HighlighterViewPackage;
@@ -92,9 +96,11 @@ public class PackageList {
       new RCTMGLPackage(),
       new RNCameraPackage(),
       new RNGestureHandlerPackage(),
+      new ReactNativeOneSignalPackage(),
       new ReanimatedPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
+      new RNSoundPackage(),
       new DynamicFontPackage(),
       new HighlighterViewPackage(),
       new TextInputDelKeyHandlerPackage(),

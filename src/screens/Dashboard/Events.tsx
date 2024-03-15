@@ -1,37 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import colors from '../../utlits/colors';
-import AllEvents from '../Events/AllEvents';
-import Report from '../Events/Report';
-import { useAuth } from '../../context/Auth';
-
+} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import colors from "../../utlits/colors";
+import AllEvents from "../Events/AllEvents";
+import Report from "../Events/Report";
+import { useAuth } from "../../context/Auth";
 
 const Events = () => {
   const { eventData } = useAuth();
-  const [activeTab, setActiveTab] = useState('Report');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [activeTab, setActiveTab] = useState("Report");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [pendingEvents, setPendingEvents] = useState<any>();
   const [dispatchEvents, setDispatchEvents] = useState<any>();
 
   useEffect(() => {
-    if(eventData && eventData?.length > 0){
-      const pendingList = eventData?.filter((event:any) => event?.statusCode === 7)?.slice(0,100);
-      const dispatchList = eventData?.filter((event:any) => event?.statusCode === 18)?.slice(0,100);
+    if (eventData && eventData?.length > 0) {
+      const pendingList = eventData
+        ?.filter((event: any) => event?.statusCode === 7)
+        ?.slice(0, 100);
+      const dispatchList = eventData
+        ?.filter((event: any) => event?.statusCode === 18)
+        ?.slice(0, 100);
       setPendingEvents([...pendingList]);
       setDispatchEvents([...dispatchList]);
     }
-  },[eventData]);
+  }, [eventData]);
 
   const handleSorting = () => {
-    const newSortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    const newSortDirection = sortDirection === "asc" ? "desc" : "asc";
     setSortDirection(newSortDirection);
   };
   const handleTabPress = (tabName: string) => {
@@ -39,10 +42,17 @@ const Events = () => {
   };
 
   const renderTabContent = (activeTab: string) => {
-    if (activeTab === 'Report') {
-      return <Report dispatchEvents={dispatchEvents}/>
-    } else if (activeTab === 'Events') {
-      return <AllEvents data={pendingEvents}  searchQuery={searchQuery} handleSorting={handleSorting} sortDirection={sortDirection}/>;
+    if (activeTab === "Report") {
+      return <Report dispatchEvents={dispatchEvents} />;
+    } else if (activeTab === "Events") {
+      return (
+        <AllEvents
+          data={pendingEvents}
+          searchQuery={searchQuery}
+          handleSorting={handleSorting}
+          sortDirection={sortDirection}
+        />
+      );
     }
   };
 
@@ -57,49 +67,53 @@ const Events = () => {
       <View style={styles.tabContainer}>
         <View style={styles.tabsContainer}>
           <TouchableOpacity
-            style={{ width: '50%' }}
-            onPress={() => handleTabPress('Report')}>
+            style={{ width: "50%" }}
+            onPress={() => handleTabPress("Report")}
+          >
             <Text
               style={[
                 styles.tabText,
                 {
                   backgroundColor:
-                    activeTab === 'Report'
+                    activeTab === "Report"
                       ? colors.tabBackgroundColor
-                      : '#F9FAFB',
-                  color: activeTab === 'Report' ? '#FFF' : '#000',
-                  borderTopLeftRadius: activeTab === 'Report' ? 4 : 0,
-                  borderBottomLeftRadius: activeTab === 'Report' ? 4 : 0,
-                  borderTopRightRadius: activeTab === 'Report' ? 4 : 0,
-                  borderBottomRightRadius: activeTab === 'Report' ? 4 : 0,
+                      : "#F9FAFB",
+                  color: activeTab === "Report" ? "#FFF" : "#000",
+                  borderTopLeftRadius: activeTab === "Report" ? 4 : 0,
+                  borderBottomLeftRadius: activeTab === "Report" ? 4 : 0,
+                  borderTopRightRadius: activeTab === "Report" ? 4 : 0,
+                  borderBottomRightRadius: activeTab === "Report" ? 4 : 0,
                 },
-              ]}>
+              ]}
+            >
               Dispatch Report
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ width: '50%' }}
-            onPress={() => handleTabPress('Events')}>
+            style={{ width: "50%" }}
+            onPress={() => handleTabPress("Events")}
+          >
             <Text
               style={[
                 styles.tabText,
                 {
                   backgroundColor:
-                    activeTab === 'Events'
+                    activeTab === "Events"
                       ? colors.tabBackgroundColor
-                      : '#F9FAFB',
-                  color: activeTab === 'Events' ? '#FFF' : '#000',
-                  borderTopLeftRadius: activeTab === 'Events' ? 4 : 0,
-                  borderBottomLeftRadius: activeTab === 'Events' ? 4 : 0,
-                  borderTopRightRadius: activeTab === 'Events' ? 4 : 0,
-                  borderBottomRightRadius: activeTab === 'Events' ? 4 : 0,
+                      : "#F9FAFB",
+                  color: activeTab === "Events" ? "#FFF" : "#000",
+                  borderTopLeftRadius: activeTab === "Events" ? 4 : 0,
+                  borderBottomLeftRadius: activeTab === "Events" ? 4 : 0,
+                  borderTopRightRadius: activeTab === "Events" ? 4 : 0,
+                  borderBottomRightRadius: activeTab === "Events" ? 4 : 0,
                 },
-              ]}>
+              ]}
+            >
               Pending Events ({pendingEvents?.length || 0})
             </Text>
           </TouchableOpacity>
         </View>
-        {activeTab === 'Events' && (
+        {activeTab === "Events" && (
           <View style={styles.searchContainer}>
             <View style={styles.searchRow}>
               <MaterialIcons
@@ -109,14 +123,18 @@ const Events = () => {
                 style={{ marginLeft: 7 }}
               />
               <TextInput
-                style={{ height: 41, backgroundColor: colors.appBackgroundColor }}
+                style={{
+                  height: 41,
+                  backgroundColor: colors.appBackgroundColor,
+                  width: "88%",
+                }}
                 placeholder="Search"
                 onChangeText={setSearchQuery}
                 value={searchQuery}
               />
             </View>
-         
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+
+            <View style={{ flexDirection: "row", gap: 8 }}>
               <View style={styles.iconContainer}>
                 {/* <Image 
                 source={require("../../assets/filter_alt.png")}
@@ -127,7 +145,10 @@ const Events = () => {
                   size={22}
                 />
               </View>
-              <TouchableOpacity style={styles.iconContainer} onPress={handleSorting}>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={handleSorting}
+              >
                 <MaterialIcons
                   name="sort-by-alpha"
                   color={colors.tabBackgroundColor}
@@ -149,17 +170,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   events: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 5,
   },
   allEvents: {
     color: colors.textBlueColor,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   tabContainer: {
     padding: 10,
@@ -168,8 +189,8 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     height: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: colors.borderColor,
     borderRadius: 6,
@@ -178,7 +199,7 @@ const styles = StyleSheet.create({
   tabText: {
     paddingVertical: 7,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   errorIcon: {
     height: 36,
@@ -187,22 +208,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     borderColor: colors.borderColor,
     borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   searchContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    justifyContent: "space-between",
+    flexDirection: "row",
     marginTop: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderRadius: 4,
     borderColor: colors.grayBorderColor,
-    width: '75%',
+    width: "75%",
   },
   iconContainer: {
     height: 35,
@@ -211,8 +232,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1,
     borderColor: colors.tabBackgroundColor,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -235,7 +235,7 @@ const MapMyIndia = ({
     handleZoomChange();
   },[mmiRef?.current])
 
-  console.log(activeTab, eventClusteredData, unitClusteredData, eventMarker, unitMarker, "activeTab");
+  // console.log(activeTab, eventClusteredData, unitClusteredData, eventMarker, unitMarker, "activeTab");
 
 
   return (

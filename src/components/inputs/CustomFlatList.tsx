@@ -1,34 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet,Linking, Pressable,ActivityIndicator, Modal} from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
-import colors from '../../utlits/colors';
-import {FlatList} from 'react-native';
-import DispatchNotification from '../../screens/Notification/DispatchNotification';
-import DispatchNotifications from '../../screens/Notification/DispatchNotification';
-import moment from 'moment';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Linking,
+  Pressable,
+  ActivityIndicator,
+  Modal,
+} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Feather from "react-native-vector-icons/Feather";
+import colors from "../../utlits/colors";
+import { FlatList } from "react-native";
+import DispatchNotifications from "../../screens/Notification/DispatchNotification";
+import moment from "moment";
+import Event from "../../screens/Notification/Event";
 
+const FlatListData = ({
+  data,
+  searchQuery,
+  sortDirection,
+  handleSorting,
+  navigation,
+}: any) => {
+  console.log(searchQuery, "serach quererre");
+  console.log(data, "dtaatatata");
+  console.log(sortDirection, "directionss");
 
-const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
-  console.log(searchQuery,"serach quererre");
-  console.log(data,"dtaatatata");
-  
-  console.log(sortDirection,"directionss");
-  
-  
   const [ismodalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const filterAndSortData = () => {
       let filtered = data;
-
       if (searchQuery) {
         const lowerCaseSearchQuery = searchQuery.toLowerCase();
         filtered = filtered.filter((item: any) => {
-          const eventTypeCode = item.agencyEventTypeCode ? item.agencyEventTypeCode.toLowerCase() : '';
-          const eventSubtypeCode = item.agencyEventSubtypeCode ? item.agencyEventSubtypeCode.toLowerCase() : '';
-          return eventTypeCode.includes(lowerCaseSearchQuery) || eventSubtypeCode.includes(lowerCaseSearchQuery);
+          const eventTypeCode = item.agencyEventTypeCode
+            ? item.agencyEventTypeCode.toLowerCase()
+            : "";
+          const eventSubtypeCode = item.agencyEventSubtypeCode
+            ? item.agencyEventSubtypeCode.toLowerCase()
+            : "";
+          return (
+            eventTypeCode.includes(lowerCaseSearchQuery) ||
+            eventSubtypeCode.includes(lowerCaseSearchQuery)
+          );
         });
       }
       // if (handleSorting) {
@@ -38,24 +55,24 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
       //     filtered.sort((a: any, b: any) => b.date.localeCompare(a.date));
       //   }
       // }
-    
+
       setFilteredData(filtered);
     };
     filterAndSortData();
   }, [searchQuery, data]);
 
-
   const closeModal = () => {
-    setIsModalVisible(false)
-  }
-  const handleCall=(item:any)=>{
-    Linking.openURL(`tel:${item?.callerNumber}`)  
-  }
+    setIsModalVisible(false);
+  };
+  const handleCall = (item: any) => {
+    Linking.openURL(`tel:${item?.callerNumber}`);
+  };
   const handleNotificationIcon = () => {
     setIsModalVisible(true);
-  }
+  };
+  const handleOpenEventDetails = () => {};
 
-  const renderItem = (item: any) => { 
+  const renderItem = (item: any) => {
     return (
       <View style={styles.container}>
         <View style={styles.contentContainer}>
@@ -65,8 +82,9 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
                 onPress={handleNotificationIcon}
                 style={[
                   styles.notificationIcon,
-                  {backgroundColor: item?.notificationAlert ||'black'},
-                ]}>
+                  { backgroundColor: item?.notificationAlert || "black" },
+                ]}
+              >
                 <MaterialIcons
                   name="notification-important"
                   color={colors.white}
@@ -74,8 +92,8 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
                 />
               </Pressable>
               <Text style={styles.notificationText}>
-                {' '}
-                {item?.agencyEventId}{' '}
+                {" "}
+                {item?.agencyEventId}{" "}
               </Text>
             </View>
             <View style={styles.rowRight}>
@@ -91,6 +109,7 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
                   name="open-in-new"
                   color={colors.tabBackgroundColor}
                   size={22}
+                  onPress={handleOpenEventDetails}
                 />
               </View>
             </View>
@@ -105,37 +124,43 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
           </View>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               marginTop: 10,
-            }}>
+            }}
+          >
             <View
               style={{
-                width: '50%',
-              }}>
+                width: "50%",
+              }}
+            >
               <Text style={styles.latLongText}>LAT</Text>
               <View style={styles.latContainer}>
-                <Text style={{color: colors.textBlueColor}}>80.9998</Text>
+                <Text style={{ color: colors.textBlueColor }}>80.9998</Text>
               </View>
             </View>
             <View
               style={{
-                width: '50%',
-              }}>
+                width: "50%",
+              }}
+            >
               <Text style={styles.latLongText}>LONG</Text>
               <View style={styles.longContainer}>
-                <Text style={{color: colors.textBlueColor}}>81.9998</Text>
+                <Text style={{ color: colors.textBlueColor }}>81.9998</Text>
               </View>
             </View>
           </View>
           <View style={styles.callerContainer}>
             <View>
-              <Text style={{color: colors.textBlueColor}}>
+              <Text style={{ color: colors.textBlueColor }}>
                 7989898989
                 {/* {item?.callData?.callerName} */}
               </Text>
-              <Text style={{color: '#344054'}}>Caller Number</Text>
+              <Text style={{ color: "#344054" }}>Caller Number</Text>
             </View>
-            <Pressable style={styles.iconContainer}  onPress={()=>handleCall(item)}>
+            <Pressable
+              style={styles.iconContainer}
+              onPress={() => handleCall(item)}
+            >
               <MaterialIcons
                 name="call"
                 color={colors.tabBackgroundColor}
@@ -148,15 +173,16 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
               borderTopWidth: 1,
               marginTop: 10,
               borderColor: colors.grayBorderColor,
-            }}>
-            <View style={{flexDirection: 'row', marginTop: 5}}>
+            }}
+          >
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
               <View style={styles.pending}>
                 <MaterialIcons
                   name="warning"
                   color={colors.pendingIconColor}
                   size={17}
                 />
-                <Text style={{marginLeft: 7, color: colors.textBlueColor}}>
+                <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
                   Pending
                 </Text>
               </View>
@@ -168,13 +194,13 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
                     size={13}
                   />
                 </View>
-                <Text style={{marginLeft: 7, color: colors.textBlueColor}}>
+                <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
                   P{item?.priority}
                 </Text>
               </View>
               <View style={styles.dateContainer}>
-                <Text style={{color: colors.textBlueColor}}>
-            {moment().format('DD/MM/YYYY - HH:mm')} 
+                <Text style={{ color: colors.textBlueColor }}>
+                  {moment(item.createdTime).format("DD/MM/YYYY - HH:mm")}
                 </Text>
               </View>
             </View>
@@ -190,19 +216,18 @@ const FlatListData = ({data,searchQuery,sortDirection,handleSorting}: any) => {
         data={filteredData}
         renderItem={({ item }: any) => renderItem(item)}
         // keyExtractor={(item) => item.location}
-        ListEmptyComponent={<ActivityIndicator color="gray" 
-        />}
+        ListEmptyComponent={<ActivityIndicator color="gray" />}
       />
       <Modal animationType="slide" transparent={true} visible={ismodalVisible}>
         <DispatchNotifications closeModal={closeModal} />
       </Modal>
     </View>
-  )
-}
-  
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     marginBottom: 10,
     paddingHorizontal: 12,
@@ -215,22 +240,22 @@ const styles = StyleSheet.create({
     borderColor: colors.grayBorderColor,
     padding: 10,
   },
-  rowContainer: {flexDirection: 'row', justifyContent: 'space-between'},
-  rowLeft: {flexDirection: 'row', alignItems: 'center'},
+  rowContainer: { flexDirection: "row", justifyContent: "space-between" },
+  rowLeft: { flexDirection: "row", alignItems: "center" },
   notificationIcon: {
     height: 35,
     width: 35,
     borderRadius: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   notificationText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.textBlueColor,
     marginLeft: 8,
     fontSize: 15,
   },
-  rowRight: {flexDirection: 'row', gap: 8},
+  rowRight: { flexDirection: "row", gap: 8 },
   iconContainer: {
     height: 35,
     width: 35,
@@ -238,16 +263,16 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1,
     borderColor: colors.tabBackgroundColor,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   details: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 6,
   },
-  leftText: {color: colors.grayTextColor},
-  rightText: {color: colors.textBlueColor, fontWeight: 'bold'},
+  leftText: { color: colors.grayTextColor },
+  rightText: { color: colors.textBlueColor, fontWeight: "bold" },
   longContainer: {
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
@@ -259,9 +284,9 @@ const styles = StyleSheet.create({
   },
   latLongText: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     padding: 4,
-    color: '#344054',
+    color: "#344054",
   },
   latContainer: {
     borderWidth: 1,
@@ -273,43 +298,43 @@ const styles = StyleSheet.create({
   },
   callerContainer: {
     borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderColor: '#D0D5DD',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderColor: "#D0D5DD",
     marginTop: 10,
     borderRadius: 4,
     padding: 5,
     backgroundColor: colors.grayBackgroundColor,
   },
   pending: {
-    width: '30%',
+    width: "30%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
     padding: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
   },
   POcontainer: {
-    width: '20%',
+    width: "20%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     padding: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   arrowIcon: {
     height: 15,
     width: 15,
     borderRadius: 24,
     backgroundColor: colors.redIcon,
-    alignItems: 'center',
-    alignSelf: 'center',
+    alignItems: "center",
+    alignSelf: "center",
   },
   dateContainer: {
-    width: '50%',
+    width: "50%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderRadius: 4,
