@@ -71,6 +71,8 @@ import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import colors from '../../utlits/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 import { useAuth } from '../../context/Auth';
 
 MapboxGL.setAccessToken(
@@ -84,6 +86,7 @@ const MapBox = ({
   activeTab,
   handleMarkerEventsClick,
   handleMarkerUnitClick,
+  isEventDetail
 }: any) => {
   const { user } = useAuth();
   const mapRef = useRef<MapboxGL.MapView | null>(null);
@@ -205,7 +208,7 @@ const MapBox = ({
   const createCurrentLocationIcon = () => {
     return (
       <Pressable style={styles.currentLocationWrapper} onPress={() => handleMarkerUnitClick(user?.unitId)}>
-        <View style={styles.markerWrapper}>
+        {!isEventDetail ? <View style={styles.markerWrapper}>
           <View style={styles.clusterMarkerContent}>
             <View
               style={[
@@ -219,7 +222,7 @@ const MapBox = ({
           <View style={styles.unitIconBox}>
             <Ionicons name="car-outline" size={17} color={colors.white} />
           </View>
-        </View>
+        </View> : <Entypo name="dot-single" size={26} color={colors.black} />}
       </Pressable>
     );
   };

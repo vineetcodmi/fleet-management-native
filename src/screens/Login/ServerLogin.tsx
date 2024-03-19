@@ -138,27 +138,23 @@ const ServerLogin = ({ route, navigation }: any) => {
                 {errors.production && touched.production && (
                   <Text style={styles.errorText}>{errors.production}</Text>
                 )}
-
-                {loading ? (
-                  <ActivityIndicator color="gray" />
-                ) : (
-                  <TouchableOpacity
-                    disabled={
-                      !values.production &&
-                      !productionScannedData &&
-                      !errors.production
-                    }
-                    style={[
-                      styles.button,
-                      !values.production || errors.production
-                        ? styles.disabledButton
-                        : null,
-                    ]}
-                    onPress={() => handleSubmit()}
-                  >
-                    <Text style={styles.buttonText}>Connect to production</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  disabled={
+                    !values.production &&
+                    !productionScannedData &&
+                    !errors.production
+                  }
+                  style={[
+                    styles.button,
+                    !values.production || errors.production
+                      ? styles.disabledButton
+                      : null,
+                  ]}
+                  onPress={() => handleSubmit()}
+                >
+                  <Text style={styles.buttonText}>Connect to production</Text>
+                  {loading && <ActivityIndicator color="white" />}
+                </TouchableOpacity>
 
                 <View style={styles.serverHeader}>
                   <Text style={styles.serverHeaderText}>
@@ -280,12 +276,14 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingHorizontal: 8,
-    gap: 16,
+    gap: 5,
+    flexDirection: "row",
     paddingVertical: 12,
     borderRadius: 6,
     marginHorizontal: 12,
     backgroundColor: "#00526F",
     justifyContent: "center",
+    alignItems: "center"
   },
   disabledButton: {
     paddingHorizontal: 8,

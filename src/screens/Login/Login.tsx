@@ -170,16 +170,13 @@ const LoginScreen = ({ navigation, route }: any) => {
                     <Text style={styles.forgotPassword}>Forgot password</Text>
                   </TouchableOpacity>
                 </View>
-                {loading ? (
-                  <ActivityIndicator color="gray" />
-                ) : (
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleSubmit()}
-                  >
-                    <Text style={styles.buttonText}>Log in</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handleSubmit()}
+                >
+                  <Text style={styles.buttonText}>Log in</Text>
+                  {loading && <ActivityIndicator color="white" />}
+                </TouchableOpacity>
               </View>
             )}
           </Formik>
@@ -332,6 +329,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
+    gap: 5,
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 12,
     borderRadius: 6,

@@ -20,53 +20,17 @@ import { useNavigation } from "@react-navigation/native";
 import { useEvents } from "../../context/Events";
 import { useAuth } from "../../context/Auth";
 
-const FlatListData = ({
-  data,
-  searchQuery,
-  sortDirection,
-  handleSorting,
-}: any) => {
+const FlatListData = ({ data }: any) => {
   const navigation =useNavigation();
   const{eventStatusCode}=useEvents();
   const{user}=useAuth();
 
   const [ismodalVisible, setIsModalVisible] = useState(false);
-  const [filteredData, setFilteredData] = useState([]);
 
   const getUnitStatus = (unit:any) => {    
     const currentStatus = eventStatusCode?.filter((status:any) => status?.id === unit?.status)?.[0];
     return currentStatus;
   }
-  useEffect(() => {
-    const filterAndSortData = () => {
-      let filtered = data;
-      if (searchQuery) {
-        const lowerCaseSearchQuery = searchQuery.toLowerCase();
-        filtered = filtered.filter((item: any) => {
-          const eventTypeCode = item.agencyEventTypeCode
-            ? item.agencyEventTypeCode.toLowerCase()
-            : "";
-          const eventSubtypeCode = item.agencyEventSubtypeCode
-            ? item.agencyEventSubtypeCode.toLowerCase()
-            : "";
-          return (
-            eventTypeCode.includes(lowerCaseSearchQuery) ||
-            eventSubtypeCode.includes(lowerCaseSearchQuery)
-          );
-        });
-      }
-      // if (handleSorting) {
-      //   if (sortDirection === 'asc') {
-      //     filtered.sort((a: any, b: any) => a.date.localeCompare(b.date));
-      //   } else if (sortDirection === 'desc') {
-      //     filtered.sort((a: any, b: any) => b.date.localeCompare(a.date));
-      //   }
-      // }
-
-      setFilteredData(filtered);
-    };
-    filterAndSortData();
-  }, [searchQuery, data]);
 
   const closeModal = () => {
     setIsModalVisible(false);
@@ -232,7 +196,7 @@ const FlatListData = ({
   return (
     <View>
       <FlatList
-        data={filteredData}
+        data={data}
         renderItem={({ item }: any) => renderItem(item)}
         // keyExtractor={(item) => item.location}
         ListEmptyComponent={<ActivityIndicator color={colors.textBlueColor}  />}

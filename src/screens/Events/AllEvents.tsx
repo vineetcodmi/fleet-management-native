@@ -3,8 +3,6 @@ import FlatListData from '../../components/inputs/CustomFlatList';
 import {View} from 'react-native';
 import { useAuth } from '../../context/Auth';
 
-
-
 const Data = [
   {
     agencyEventId: '1',
@@ -60,12 +58,12 @@ const Data = [
   },
 ];
 
-const AllEvents = ({data, searchQuery,sortDirection,handleSorting}:any) => {
+const AllEvents = ({data}:any) => {
 
   
   return (
     <View style={{paddingBottom: 175}}>
-      <FlatListData data={data} searchQuery={searchQuery} sortDirection={sortDirection} handleSorting={handleSorting}/>
+      <FlatListData data={data}/>
     </View>
   );
 };

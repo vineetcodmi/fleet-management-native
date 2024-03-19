@@ -23,20 +23,56 @@ const Events = () => {
   useEffect(() => {
     if (eventData && eventData?.length > 0) {
       const pendingList = eventData
-        ?.filter((event: any) => event?.statusCode === 7)
-        ?.slice(0, 100);
+        ?.filter((event: any) => event?.statusCode === 7);
       const dispatchList = eventData
-        ?.filter((event: any) => event?.statusCode === 18)
-        ?.slice(0, 100);
+        ?.filter((event: any) => event?.statusCode === 18);
       setPendingEvents([...pendingList]);
       setDispatchEvents([...dispatchList]);
     }
   }, [eventData]);
 
+  useEffect(() => {
+    if(pendingEvents){
+      const isSortAscending = sortDirection === "asc" ? true : false;
+      const sortedEvents = [...pendingEvents].sort((a, b) => {
+        const dateA: any = new Date(a.createdTime);
+        const dateB: any = new Date(b.createdTime);
+
+        // Compare dates first
+        if (dateA.toDateString() !== dateB.toDateString()) {
+            return isSortAscending ? dateA - dateB : dateB - dateA;
+        } else {
+            // If dates are the same, compare times
+            const timeA = dateA.getHours() * 3600 + dateA.getMinutes() * 60 + dateA.getSeconds();
+            const timeB = dateB.getHours() * 3600 + dateB.getMinutes() * 60 + dateB.getSeconds();
+
+            return isSortAscending ? timeA - timeB : timeB - timeA;
+        }
+      });
+      setPendingEvents([...sortedEvents]);
+    }
+  },[sortDirection]);
+
+  useEffect(() => {
+    if (eventData) {
+      if(searchQuery){
+        const searchedEvents = eventData?.filter((event:any) =>
+          (event?.agencyEventTypeCode?.toLowerCase() === searchQuery.toLowerCase() || event?.agencyEventSubtypeCode?.toLowerCase() === searchQuery.toLowerCase()) &&
+          event?.statusCode === 7
+        );
+        setPendingEvents([...searchedEvents])
+      } else {
+        const pendingEventData = eventData?.filter((event:any) => event?.statusCode === 7);
+        setPendingEvents([...pendingEventData])
+      }
+    }
+  },[searchQuery, eventData])
+
   const handleSorting = () => {
     const newSortDirection = sortDirection === "asc" ? "desc" : "asc";
     setSortDirection(newSortDirection);
   };
+
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
   };
@@ -46,12 +82,7 @@ const Events = () => {
       return <Report dispatchEvents={dispatchEvents} />;
     } else if (activeTab === "Events") {
       return (
-        <AllEvents
-          data={pendingEvents}
-          searchQuery={searchQuery}
-          handleSorting={handleSorting}
-          sortDirection={sortDirection}
-        />
+        <AllEvents data={pendingEvents}/>
       );
     }
   };

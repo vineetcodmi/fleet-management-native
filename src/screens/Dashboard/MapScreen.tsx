@@ -24,6 +24,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import StatusCodesComponent from '../MapScreen/StatusCode';
 import { useEvents } from '../../context/Events';
 import {useAuth} from '../../context/Auth';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 interface Marker {
   id: string;
   coordinate: [number, number];
@@ -55,8 +56,9 @@ const MapScreen = () => {
     setActiveTab(tabName);
   };
   const [selectedOption, setSelectedOption] = useState('mapMyIndia');
-  const handleOptionChange = (option: any) => {
+  const handleOptionChange = async(option: any) => {
     setSelectedOption(option);
+    await AsyncStorage.setItem("map", option);
   };
 
 

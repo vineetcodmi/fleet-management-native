@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Pressable,
@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
   Switch,
+  Platform,
+  PermissionsAndroid,
 } from "react-native";
 import colors from "../../utlits/colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -18,6 +20,9 @@ import DropDownPicker from "react-native-dropdown-picker";
 import MapMyIndia from "../MapScreen/MapMyIndia";
 import { useEvents } from "../../context/Events";
 import { useAuth } from "../../context/Auth";
+import Geolocation from "@react-native-community/geolocation";
+import MapBox from "../MapScreen/MapBox";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const General = ({ data }: any) => {
   const { eventStatusCode } = useEvents();
@@ -26,12 +31,54 @@ const General = ({ data }: any) => {
   const [selectedCase, setSelectedCase] = useState(null);
   const [openCommentModal, setOpenCommentModal] = useState(false);
   const [isCritical, setIsCritical] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState<[number, number]>();
+  const [markersEvents, setMarkersEvents] = useState<any>([]);
   const [comment, setComment] = useState("");
+  const [selectedMap, setSelectedMap] = useState<string>("mapMyIndia");
   const [cases, setCases] = useState([
     { label: "Case 1", value: "case1" },
     { label: "Case 2", value: "case2" },
     { label: "Case 3", value: "case3" },
   ]);
+
+  useEffect(() => {
+    fetchMap();
+    getCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      const location = data?.location;
+      const id = data?.agencyEventId;
+      const pattern =
+        /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
+      const match = location.match(pattern);
+      if (match) {
+        const [latString, lngString] = match.slice(1);
+        const latParts = latString.split(':').map(parseFloat);
+        const lngParts = lngString.split(':').map(parseFloat);
+        const lat = (
+          latParts[0] +
+          latParts[1] / 60 +
+          latParts[2] / 3600
+        ).toFixed(2);
+        const lng = (
+          lngParts[0] +
+          lngParts[1] / 60 +
+          lngParts[2] / 3600
+        ).toFixed(2);
+        setMarkersEvents([{ id: data?.agencyEventId, coordinate: [parseFloat(lat), parseFloat(lng)] }])
+      }
+    }
+  }, [data]);
+
+  const fetchMap = async() => {
+    const map:any = await AsyncStorage.getItem("map");
+    console.log(map, "k");
+    
+    setSelectedMap(map);
+  }
+
   const handleCaseChange = (value: any) => {
     setSelectedCase(value);
   };
@@ -43,13 +90,74 @@ const General = ({ data }: any) => {
     return currentStatus;
   };
 
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'This app needs access to your location.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position: any) => {
+              setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+            },
+            (error: any) => {
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          );
+        } else {
+          console.log('Location permission denied');
+        }
+      } else {
+        // For iOS, location permission is requested when the app is in use.
+        Geolocation.getCurrentPosition(
+          (position: any) => {
+            setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+          },
+          (error: any) => {
+            console.log(error.code, error.message);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+        );
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   const closeOpenCommentModal = () => {
     setOpenCommentModal(false);
   };
+
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 0.4 }}>
-        <MapMyIndia />
+        {selectedMap === "mapMyIndia" ? <MapMyIndia
+          eventMarker={markersEvents}
+          unitMarker={[]}
+          activeTab={"Events"}
+          handleMarkerEventsClick={() => { }}
+          handleMarkerUnitClick={() => { }}
+          currentLocation={currentLocation}
+          isEventDetail={true}
+        /> : <MapBox
+          eventMarker={markersEvents}
+          unitMarker={[]}
+          activeTab={"Events"}
+          handleMarkerEventsClick={() => { }}
+          handleMarkerUnitClick={() => { }}
+          currentLocation={currentLocation}
+          isEventDetail={true}
+        />}
       </View>
       <ScrollView style={{ flex: 0.7 }}>
         <View style={styles.container}>
@@ -591,7 +699,7 @@ const General = ({ data }: any) => {
                   borderWidth: 1,
                   margin: 12,
                   borderRadius: 3,
-                  height: "100%", 
+                  height: "100%",
                 }}
                 placeholder="Enter here"
                 multiline
