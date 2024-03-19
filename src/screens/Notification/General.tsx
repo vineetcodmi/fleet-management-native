@@ -1,270 +1,825 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Switch,
+} from "react-native";
 import colors from "../../utlits/colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 import { ScrollView } from "react-native-gesture-handler";
+import moment from "moment";
+import DropDownPicker from "react-native-dropdown-picker";
+import MapMyIndia from "../MapScreen/MapMyIndia";
+import { useEvents } from "../../context/Events";
+import { useAuth } from "../../context/Auth";
 
+const General = ({ data }: any) => {
+  const { eventStatusCode } = useEvents();
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState(null);
+  const [openCommentModal, setOpenCommentModal] = useState(false);
+  const [isCritical, setIsCritical] = useState(false);
+  const [comment, setComment] = useState("");
+  const [cases, setCases] = useState([
+    { label: "Case 1", value: "case1" },
+    { label: "Case 2", value: "case2" },
+    { label: "Case 3", value: "case3" },
+  ]);
+  const handleCaseChange = (value: any) => {
+    setSelectedCase(value);
+  };
 
+  const getUnitStatus = (unit: any) => {
+    const currentStatus = eventStatusCode?.filter(
+      (status: any) => status?.id === unit?.status
+    )?.[0];
+    return currentStatus;
+  };
 
-const General = () => {
-    return (
-        <View style={{ flex: 1, backgroundColor: 'lightgray' }}>
-            <ScrollView style={styles.container}>
-                <Text style={{ color: colors.black, fontWeight: 'bold', marginLeft: 10, fontSize: 18, padding: 5 }}>Event Details</Text>
-                <View style={styles.contentContainer}>
-                    <View style={styles.rowContainer}>
-                        <View style={styles.rowLeft}>
-                            <View
-                                style={[
-                                    styles.notificationIcon,
-                                ]}>
-                                <MaterialIcons
-                                    name="notification-important"
-                                    color={colors.white}
-                                    size={22}
-                                />
-                            </View>
-                            <Text style={styles.notificationText} >
-                                {' '}
-                                P237073100003
-                            </Text>
-                        </View>
-                        
-                        <View style={styles.rowContainer}>
-
-                        </View>
-                        <TouchableOpacity
-                            style={styles.button}>
-                            <Feather name="map" size={18} color={colors.white} />
-                            <Text style={styles.buttonText}>Open In Maps</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.details}>
-                        <Text style={styles.leftText}>Event Type</Text>
-                        <Text style={styles.rightText}>Accident</Text>
-                    </View>
-                    <View style={styles.details}>
-                        <Text style={styles.leftText}>Event Sub Type</Text>
-                        <Text style={styles.rightText}>Road Accident</Text>
-                    </View>
-                    <View style={styles.details}>
-                        <Text style={styles.leftText}>Agency</Text>
-                        <Text style={styles.rightText}>Jaipur Police</Text>
-                    </View>
-                    <View style={styles.details}>
-                        <Text style={styles.leftText}>DGroup</Text>
-                        <Text style={styles.rightText}>UP</Text>
-                    </View>
-                    <View style={styles.details}>
-                        <Text style={styles.leftText}>X-Street 1</Text>
-                        <Text style={styles.rightText}> -</Text>
-                    </View>
-                    <View style={[styles.details, { borderBottomColor: colors.white }]}>
-                        <Text style={styles.leftText}>X-Street 2</Text>
-                        <Text style={styles.rightText}> -</Text>
-                    </View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                        }}>
-                        <View
-                            style={{
-                                width: '50%',
-                            }}>
-                            <Text style={styles.latLongText}>LAT</Text>
-                            <View style={styles.latContainer}>
-                                <Text style={{ color: colors.textBlueColor }}>80.9998</Text>
-                            </View>
-                        </View>
-                        <View
-                            style={{
-                                width: '50%',
-                            }}>
-                            <Text style={styles.latLongText}>LONG</Text>
-                            <View style={styles.longContainer}>
-                                <Text style={{ color: colors.textBlueColor }}>81.9998</Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View
-                        style={{
-                            borderTopWidth: 1,
-                            marginTop: 10,
-                            borderColor: colors.grayBorderColor,
-                        }}>
-                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                            <View style={styles.pending}>
-                                <MaterialIcons
-                                    name="warning"
-                                    color={colors.pendingIconColor}
-                                    size={17}
-                                />
-                                <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                                    Pending
-                                </Text>
-                            </View>
-                            <View style={styles.POcontainer}>
-                                <View style={styles.arrowIcon}>
-                                    <MaterialIcons
-                                        name="arrow-upward"
-                                        color={colors.white}
-                                        size={12}
-                                    />
-                                </View>
-                                <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                                    P2
-                                </Text>
-                            </View>
-                            <View style={styles.dateContainer}>
-                                <Text style={{ color: colors.textBlueColor }}>
-                                    17/07/2023 -18:033
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
+  const closeOpenCommentModal = () => {
+    setOpenCommentModal(false);
+  };
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 0.4 }}>
+        <MapMyIndia />
+      </View>
+      <ScrollView style={{ flex: 0.7 }}>
+        <View style={styles.container}>
+          <Text style={styles.headerTextStyle}>Events Details</Text>
+          <View
+            style={{
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 8,
+              borderColor: colors.grayBorderColor,
+              padding: 10,
+              gap: 3,
+            }}
+          >
+            <View style={styles.rowContainer}>
+              <View style={styles.rowLeft}>
+                <View style={[styles.notificationIcon]}>
+                  <MaterialIcons
+                    name="notification-important"
+                    color={colors.white}
+                    size={22}
+                  />
                 </View>
-            </ScrollView>
-        </View>
+                <Text style={styles.notificationText}>
+                  {" "}
+                  {data?.agencyEventId}
+                </Text>
+              </View>
 
-    )
-}
+              <TouchableOpacity style={styles.button}>
+                <Feather name="map" size={18} color={colors.white} />
+                <Text style={styles.buttonText}>Open In Maps</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>Event Type</Text>
+              <Text style={styles.rightText}>{data?.agencyEventTypeCode}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>Event Sub Type</Text>
+              <Text style={styles.rightText}>
+                {data?.agencyEventSubtypeCode}
+              </Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>Agency</Text>
+              <Text style={styles.rightText}>{data?.agencyId}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>DGroup</Text>
+              <Text style={styles.rightText}>{data?.dispatchGroup}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>X-Street 1</Text>
+              <Text style={styles.rightText}> -</Text>
+            </View>
+            <View style={[styles.details, { borderBottomColor: colors.white }]}>
+              <Text style={styles.leftText}>X-Street 2</Text>
+              <Text style={styles.rightText}> -</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <View
+                style={{
+                  width: "50%",
+                }}
+              >
+                <Text style={styles.latLongText}>LAT</Text>
+                <View style={styles.latContainer}>
+                  <Text style={{ color: colors.textBlueColor }}>80.9998</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  width: "50%",
+                }}
+              >
+                <Text style={styles.latLongText}>LONG</Text>
+                <View style={styles.longContainer}>
+                  <Text style={{ color: colors.textBlueColor }}>81.9998</Text>
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                borderTopWidth: 1,
+                marginTop: 10,
+                borderColor: colors.grayBorderColor,
+              }}
+            >
+              <View style={{ flexDirection: "row", marginTop: 5 }}>
+                <View style={styles.pending}>
+                  <MaterialIcons
+                    name="warning"
+                    color={colors.pendingIconColor}
+                    size={17}
+                  />
+                  <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
+                    {getUnitStatus(user)?.status}
+                  </Text>
+                </View>
+                <View style={styles.POcontainer}>
+                  <View style={styles.arrowIcon}>
+                    <MaterialIcons
+                      name="arrow-upward"
+                      color={colors.white}
+                      size={12}
+                    />
+                  </View>
+                  <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
+                    P{data?.priority}
+                  </Text>
+                </View>
+                <View style={styles.dateContainer}>
+                  <Text style={{ color: colors.textBlueColor }}>
+                    {moment(data?.createdTime).format("DD/MM/YYYY - HH:mm")}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <Text style={styles.headerTextStyle}>Caller Information</Text>
+          <View style={styles.contentContainer}>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>Source</Text>
+              <Text style={styles.rightText}>{data?.agencyEventTypeCode}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>Name</Text>
+              <Text style={styles.rightText}>
+                {data?.agencyEventSubtypeCode}
+              </Text>
+            </View>
+            <View style={[styles.details, { borderBottomColor: colors.white }]}>
+              <Text style={styles.leftText}>Address</Text>
+              <Text style={styles.rightText}> -</Text>
+            </View>
+            <View style={styles.callerContainer}>
+              <View>
+                <Text style={{ color: colors.textBlueColor }}>
+                  7989898989
+                  {/* {item?.callData?.callerName} */}
+                </Text>
+                <Text style={{ color: "#344054" }}>Caller Number</Text>
+              </View>
+              <Pressable style={styles.iconContainer}>
+                <MaterialIcons
+                  name="call"
+                  color={colors.tabBackgroundColor}
+                  size={20}
+                />
+              </Pressable>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.headerTextStyle}>Assigend Units</Text>
+            <View
+              style={{
+                width: 28,
+                height: 23,
+                borderWidth: 1,
+                borderRadius: 2,
+                marginRight: 10,
+                backgroundColor: colors.textBlueColor,
+              }}
+            >
+              <Text style={{ color: colors.white, textAlign: "center" }}>
+                3
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 8,
+              borderColor: colors.grayBorderColor,
+            }}
+          >
+            <View style={{ padding: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottomWidth: 1,
+                  paddingBottom: 8,
+                  borderBottomColor: colors.grayBorderColor,
+                }}
+              >
+                <View style={styles.rowLeft}>
+                  <View
+                    style={[
+                      styles.notificationIcon,
+                      { backgroundColor: colors.redIcon },
+                    ]}
+                  >
+                    <MaterialIcons
+                      name="notification-important"
+                      color={colors.white}
+                      size={22}
+                    />
+                  </View>
+                  <Text style={styles.notificationText}> LKWO3</Text>
+                </View>
+                <View
+                  style={{
+                    width: "60%",
+                    flexDirection: "row",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "50%",
+                      borderWidth: 1,
+                      borderColor: colors.grayBorderColor,
+                      borderRadius: 4,
+                      borderTopRightRadius: 0,
+                      borderBottomRightRadius: 0,
+                      padding: 8,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 3,
+                    }}
+                  >
+                    <MaterialIcons
+                      name="pin-drop"
+                      size={22}
+                      color={colors.redIcon}
+                    />
+                    <Text>Arrived</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.longContainer,
+                      { width: "50%", alignItems: "center" },
+                    ]}
+                  >
+                    <Text>Police-FRV</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 8,
+                borderTopWidth: 1,
+                borderTopColor: colors.grayBorderColor,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#344054" }}>Add Your Unit To Event</Text>
+              <TouchableOpacity style={styles.button}>
+                <MaterialIcons name="add" size={20} color={colors.white} />
+                <Text style={styles.buttonText}>Self Attach</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Text style={styles.headerTextStyle}>Case Number</Text>
+          <View
+            style={{
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 8,
+              borderColor: colors.grayBorderColor,
+            }}
+          >
+            <View style={{ padding: 10 }}>
+              <Text
+                style={[
+                  styles.leftText,
+                  { fontSize: 14, fontWeight: "bold", marginBottom: 8 },
+                ]}
+              >
+                SELECT CASE
+              </Text>
+              <DropDownPicker
+                open={open}
+                value={selectedCase}
+                items={cases}
+                setOpen={setOpen}
+                setValue={handleCaseChange}
+                setItems={setCases}
+                placeholder="Select"
+                style={{
+                  borderColor: colors.grayBorderColor,
+                }}
+                placeholderStyle={{ color: colors.grayTextColor }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderTopWidth: 1,
+                borderTopColor: colors.grayBorderColor,
+                padding: 10,
+              }}
+            >
+              <Text style={{ color: "#344054" }}>Add Another Case Number</Text>
+              <TouchableOpacity style={styles.button}>
+                <MaterialIcons name="add" size={20} color={colors.white} />
+                <Text style={styles.buttonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.headerTextStyle}>Comments</Text>
+            <View
+              style={{
+                width: 28,
+                height: 23,
+                borderWidth: 1,
+                borderRadius: 2,
+                marginRight: 10,
+                backgroundColor: colors.textBlueColor,
+              }}
+            >
+              <Text style={{ color: colors.white, textAlign: "center" }}>
+                3
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 8,
+              borderColor: colors.grayBorderColor,
+            }}
+          >
+            <View style={{ padding: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View style={styles.rowLeft}>
+                  <View
+                    style={{
+                      height: 35,
+                      width: 35,
+                      borderRadius: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: colors.redIcon,
+                    }}
+                  >
+                    <MaterialIcons
+                      name="info-outline"
+                      color={colors.white}
+                      size={22}
+                    />
+                  </View>
+                  <Text style={styles.notificationText}> LKWO3</Text>
+                </View>
+                <Text>02/02/2024 -17:01:24</Text>
+              </View>
+              <Text style={{ marginTop: 10 }}>
+                Lorem Ipsum has been the industry's standard dummy text ever
+                since the 1500s,when an unknown printer took a galley of type
+                and scrambled it to make a type specimen book
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 8,
+                borderTopWidth: 1,
+                borderTopColor: colors.grayBorderColor,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#344054" }}>Add Comment</Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setOpenCommentModal()}
+              >
+                <MaterialIcons name="add" size={20} color={colors.white} />
+                <Text style={styles.buttonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              alignContent: "center",
+            }}
+          >
+            <Text style={styles.headerTextStyle}>Tow Request</Text>
+            <View
+              style={{
+                width: 28,
+                height: 23,
+                borderWidth: 1,
+                borderRadius: 2,
+                marginRight: 10,
+                backgroundColor: colors.textBlueColor,
+              }}
+            >
+              <Text style={{ color: colors.white, textAlign: "center" }}>
+                0
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 8,
+              borderColor: colors.grayBorderColor,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 8,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#344054" }}>Add Tow Request</Text>
+              <TouchableOpacity style={styles.button}>
+                <MaterialIcons name="add" size={20} color={colors.white} />
+                <Text style={styles.buttonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Text style={styles.headerTextStyle}>Times</Text>
+          <View style={styles.contentContainer}>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>&#8226; Dispatched</Text>
+              <Text style={styles.rightText}>02/02/2024 -17:01:24</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.leftText}>&#8226; First Arrival</Text>
+              <Text style={styles.rightText}>-</Text>
+            </View>
+            <View style={[styles.details, { borderBottomColor: colors.white }]}>
+              <Text style={styles.leftText}>&#8226; Closed</Text>
+              <Text style={styles.rightText}> -</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={openCommentModal}
+        onRequestClose={closeOpenCommentModal}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#00000079",
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              backgroundColor: colors.white,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              bottom: 0,
+              position: "absolute",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 16,
+              }}
+            >
+              <Text style={{ fontSize: 17, color: colors.textBlueColor }}>
+                Add Comments
+              </Text>
+              <TouchableOpacity
+                style={{
+                  height: 30,
+                  width: 30,
+                  borderRadius: 20,
+                  backgroundColor: colors.grayBackgroundColor,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 1,
+                  borderColor: colors.grayBorderColor,
+                }}
+                onPress={closeOpenCommentModal}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={20}
+                  color={colors.iconGrayColor}
+                />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                borderTopWidth: 1,
+                borderTopColor: colors.grayBorderColor,
+                height: 100, // Set the fixed height here
+              }}
+            >
+              <TextInput
+                style={{
+                  padding: 12,
+                  borderColor: colors.grayBorderColor,
+                  borderWidth: 1,
+                  margin: 12,
+                  borderRadius: 3,
+                  height: "100%", 
+                }}
+                placeholder="Enter here"
+                multiline
+                value={comment}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 15,
+                marginTop: 10,
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  alignContent: "center",
+                }}
+              >
+                <View
+                  style={{
+                    height: 40,
+                    width: 40,
+                    borderRadius: 20,
+                    backgroundColor: "#667085",
+                    borderWidth: 1,
+                    borderColor: colors.grayBorderColor,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <MaterialIcons
+                    name="error-outline"
+                    color={colors.white}
+                    size={23}
+                  />
+                </View>
+                <Text style={{ color: "#475467" }}> Critical Comment</Text>
+              </View>
+              <Switch
+                trackColor={{ false: "#767577", true: colors.grayBorderColor }}
+                thumbColor={isCritical ? colors.iconGrayColor : "#f4f3f4"}
+                ios_backgroundColor={colors.grayBorderColor}
+                onValueChange={() =>
+                  setIsCritical((previousState) => !previousState)
+                }
+                value={isCritical}
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 8,
+                paddingVertical: 8,
+                borderRadius: 3,
+                marginHorizontal: 12,
+                backgroundColor: "#00526F",
+                justifyContent: "center",
+                marginBottom: 10,
+              }}
+            >
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'white',
-        marginBottom: 10,
-        paddingHorizontal: 12,
-        paddingVertical: 3,
-        position: 'absolute',
-        bottom: -10,
-    },
-    assignText: {
-        fontSize: 16,
-        color: colors.black,
-        fontWeight: 'bold',
-        marginLeft: 10,
-    },
-    contentContainer: {
-        borderWidth: 1,
-        marginTop: 8,
-        borderRadius: 8,
-        borderColor: colors.grayBorderColor,
-        padding: 10,
-    },
-    rowContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-    rowLeft: { flexDirection: 'row', alignItems: 'center' },
-    notificationIcon: {
-        height: 35,
-        width: 35,
-        borderRadius: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors.black
-    },
-    notificationText: {
-        fontWeight: 'bold',
-        color: colors.textBlueColor,
-        marginLeft: 8,
-        fontSize: 15,
-    },
-    rowRight: { flexDirection: 'row', gap: 8 },
-    iconContainer: {
-        height: 35,
-        width: 35,
-        backgroundColor: colors.grayBackgroundColor,
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: colors.tabBackgroundColor,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    details: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 3,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.grayBorderColor,
-        paddingBottom: 8
-    },
-    leftText: { color: colors.grayTextColor },
-    rightText: { color: colors.textBlueColor, fontWeight: 'bold' },
-    longContainer: {
-        borderWidth: 1,
-        borderColor: colors.grayBorderColor,
-        borderRadius: 4,
-        borderLeftWidth: 0,
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        padding: 8,
-    },
-    latLongText: {
-        fontSize: 10,
-        fontWeight: 'bold',
-        padding: 4,
-        color: '#344054',
-    },
-    latContainer: {
-        borderWidth: 1,
-        borderColor: colors.grayBorderColor,
-        borderRadius: 4,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        padding: 8,
-    },
-    pending: {
-        width: '30%',
-        borderWidth: 1,
-        borderColor: colors.grayBorderColor,
-        borderTopLeftRadius: 4,
-        borderBottomLeftRadius: 4,
-        padding: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'center',
-    },
-    POcontainer: {
-        width: '20%',
-        borderWidth: 1,
-        borderColor: colors.grayBorderColor,
-        padding: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    arrowIcon: {
-        height: 15,
-        width: 15,
-        borderRadius: 24,
-        backgroundColor: colors.redIcon,
-        alignItems: 'center',
-    },
-    dateContainer: {
-        width: '50%',
-        borderWidth: 1,
-        borderColor: colors.grayBorderColor,
-        borderRadius: 4,
-        borderLeftWidth: 0,
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        padding: 8,
-    },
-    button: {
-        flexDirection: 'row',
-        paddingHorizontal: 8,
-        paddingVertical: 8,
-        height: 35,
-        backgroundColor: '#00526F',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 4,
-        gap: 10
-    },
-    buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
+  container: {
+    backgroundColor: "white",
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+  },
+  assignText: {
+    fontSize: 16,
+    color: colors.black,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  contentContainer: {
+    borderWidth: 1,
+    marginTop: 8,
+    borderRadius: 8,
+    borderColor: colors.grayBorderColor,
+    padding: 10,
+    gap: 3,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  rowLeft: { flexDirection: "row", alignItems: "center" },
+  notificationIcon: {
+    height: 35,
+    width: 35,
+    borderRadius: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.black,
+  },
+  notificationText: {
+    fontWeight: "bold",
+    color: colors.textBlueColor,
+    marginLeft: 8,
+    fontSize: 15,
+  },
+  rowRight: { flexDirection: "row", gap: 8 },
+  iconContainer: {
+    height: 35,
+    width: 35,
+    backgroundColor: colors.grayBackgroundColor,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.tabBackgroundColor,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  details: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grayBorderColor,
+    paddingBottom: 8,
+  },
+  leftText: { color: colors.grayTextColor },
+  rightText: { color: colors.textBlueColor, fontWeight: "bold" },
+  longContainer: {
+    borderWidth: 1,
+    borderColor: colors.grayBorderColor,
+    borderRadius: 4,
+    borderLeftWidth: 0,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    padding: 8,
+    justifyContent: "center",
+  },
+  latLongText: {
+    fontSize: 10,
+    fontWeight: "bold",
+    padding: 4,
+    color: "#344054",
+  },
+  latContainer: {
+    borderWidth: 1,
+    borderColor: colors.grayBorderColor,
+    borderRadius: 4,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    padding: 8,
+  },
+  pending: {
+    width: "30%",
+    borderWidth: 1,
+    borderColor: colors.grayBorderColor,
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+    padding: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  POcontainer: {
+    width: "20%",
+    borderWidth: 1,
+    borderColor: colors.grayBorderColor,
+    padding: 8,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  arrowIcon: {
+    height: 15,
+    width: 15,
+    borderRadius: 24,
+    backgroundColor: colors.redIcon,
+    alignItems: "center",
+  },
+  dateContainer: {
+    width: "50%",
+    borderWidth: 1,
+    borderColor: colors.grayBorderColor,
+    borderRadius: 4,
+    borderLeftWidth: 0,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    padding: 8,
+  },
+  button: {
+    flexDirection: "row",
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    height: 35,
+    backgroundColor: "#00526F",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    gap: 4,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  callerContainer: {
+    borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderColor: "#D0D5DD",
+    marginTop: 10,
+    borderRadius: 4,
+    padding: 5,
+    backgroundColor: colors.grayBackgroundColor,
+  },
+  headerTextStyle: {
+    color: colors.black,
+    fontWeight: "bold",
+    marginLeft: 10,
+    marginTop: 10,
+    fontSize: 15,
+    padding: 5,
+  },
 });
 
-
-export default General
+export default General;

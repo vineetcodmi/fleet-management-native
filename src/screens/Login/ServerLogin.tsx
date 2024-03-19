@@ -33,11 +33,11 @@ const ServerLogin = ({ route, navigation }: any) => {
     }
   }, [serverKey, scannedData]);
 
-  // useEffect(() => {
-  //   if (token) {
-  //     navigation.replace("BottomNavigation");
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    if (token) {
+      navigation.replace("BottomNavigation");
+    }
+  }, [token]);
 
   const handleServerProduction = () => {
     try {

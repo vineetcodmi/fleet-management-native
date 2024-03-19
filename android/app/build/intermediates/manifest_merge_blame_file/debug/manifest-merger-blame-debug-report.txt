@@ -12,8 +12,8 @@
 11-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:5-67
 11-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:22-64
 12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-12-->[:mapmyindia-map-react-native-beta] /Users/apple/Documents/fleet-management-native/node_modules/mapmyindia-map-react-native-beta/android/rctmgl/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:5-79
-12-->[:mapmyindia-map-react-native-beta] /Users/apple/Documents/fleet-management-native/node_modules/mapmyindia-map-react-native-beta/android/rctmgl/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:22-76
+12-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:5-79
+12-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:22-76
 13    <uses-permission android:name="android.permission.CAMERA" />
 13-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:5-65
 13-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:22-62
@@ -158,48 +158,48 @@
 78-->[androidx.core:core:1.9.0] /Users/apple/.gradle/caches/transforms-3/22683146be7de19e680288086dc84be1/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
 79
 80    <application
-80-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:5:5-24:19
+80-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:7:5-26:19
 81        android:name="com.fleet.MainApplication"
-81-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:6:7-38
+81-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:8:7-38
 82        android:allowBackup="false"
-82-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:10:7-34
+82-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:12:7-34
 83        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 83-->[androidx.core:core:1.9.0] /Users/apple/.gradle/caches/transforms-3/22683146be7de19e680288086dc84be1/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
 84        android:debuggable="true"
 85        android:extractNativeLibs="true"
 86        android:icon="@mipmap/ic_launcher"
-86-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:8:7-41
+86-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:10:7-41
 87        android:label="@string/app_name"
-87-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:7:7-39
+87-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:9:7-39
 88        android:roundIcon="@mipmap/ic_launcher_round"
-88-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:9:7-52
+88-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:11:7-52
 89        android:theme="@style/AppTheme"
-89-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:11:7-38
+89-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:13:7-38
 90        android:usesCleartextTraffic="true" >
 90-->/Users/apple/Documents/fleet-management-native/android/app/src/debug/AndroidManifest.xml:6:9-44
 91        <activity
-91-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:12:7-23:18
+91-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:14:7-25:18
 92            android:name="com.fleet.MainActivity"
-92-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:13:9-37
+92-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:15:9-37
 93            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-93-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:15:9-118
+93-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:17:9-118
 94            android:exported="true"
-94-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:18:9-32
+94-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:20:9-32
 95            android:label="@string/app_name"
-95-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:14:9-41
+95-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:16:9-41
 96            android:launchMode="singleTask"
-96-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:16:9-40
+96-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:18:9-40
 97            android:windowSoftInputMode="adjustResize" >
-97-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:17:9-51
+97-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:19:9-51
 98            <intent-filter>
-98-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:19:9-22:25
+98-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:21:9-24:25
 99                <action android:name="android.intent.action.MAIN" />
-99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:20:13-65
-99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:20:21-62
+99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:13-65
+99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:21-62
 100
 101                <category android:name="android.intent.category.LAUNCHER" />
-101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:21:13-73
-101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:21:23-70
+101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:13-73
+101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:23-70
 102            </intent-filter>
 103        </activity>
 104

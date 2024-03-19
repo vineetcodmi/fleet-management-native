@@ -13,7 +13,7 @@ import Report from "../Events/Report";
 import { useAuth } from "../../context/Auth";
 
 const Events = () => {
-  const { eventData } = useAuth();
+  const { eventData,user } = useAuth();
   const [activeTab, setActiveTab] = useState("Report");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -126,7 +126,7 @@ const Events = () => {
                 style={{
                   height: 41,
                   backgroundColor: colors.appBackgroundColor,
-                  width: "88%",
+                  width: "75%",
                 }}
                 placeholder="Search"
                 onChangeText={setSearchQuery}

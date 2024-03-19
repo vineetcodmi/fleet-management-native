@@ -6,9 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  PermissionsAndroid, Platform
 } from 'react-native';
-
-import {useAuth} from '../../context/Auth';
 import axios from 'axios';
 import {baseUrl} from '../../config';
 import colors from '../../utlits/colors';
@@ -23,6 +22,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import StatusCodesComponent from '../MapScreen/StatusCode';
+import { useEvents } from '../../context/Events';
+import {useAuth} from '../../context/Auth';
 interface Marker {
   id: string;
   coordinate: [number, number];
@@ -30,12 +31,10 @@ interface Marker {
 
 interface EventData {}
 interface UnitData {}
-interface statuscode{
-  beat:string
-}
 
 const MapScreen = () => {
-  const {token, user} = useAuth();
+  const {token,user} = useAuth();
+  const{unitsStatusCode}=useEvents();
   const [markersEvents, setMarkersEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [markersUnit, setMarkersUnit] = useState([]);
@@ -46,14 +45,12 @@ const MapScreen = () => {
   const [modalVisibleStatusCode, setModalVisibleStatusCode] = useState(false);
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [unitData, setUnitData] = useState<UnitData | null>();
-  const [statusCodeData, setStatusCodeData] = useState<statuscode[]>([]);
 
   const header = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
   };
@@ -62,25 +59,57 @@ const MapScreen = () => {
     setSelectedOption(option);
   };
 
-  const getUnitStatus = (unit:any) => {
-    const currentStatus = statusCodeData?.filter((status:any) => status?.id === unit?.status)?.[0];
+
+  const getUnitStatus = (unit:any) => {    
+    const currentStatus = unitsStatusCode?.filter((status:any) => status?.id === unit?.status)?.[0];
     return currentStatus;
   }
 
   useEffect(() => {
     getCurrentLocation();
-  });
-  const getCurrentLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position: any) => {
-        setCurrentLocation([position.coords.longitude, position.coords.latitude])
-      },
-      (error: any) => {
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
+  },[]);
+ const getCurrentLocation = async () => {
+  try {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'This app needs access to your location.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(
+          (position:any) => {
+            setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+          },
+          (error:any) => {
+            console.log(error.code, error.message);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+        );
+      } else {
+        console.log('Location permission denied');
+      }
+    } else {
+      // For iOS, location permission is requested when the app is in use.
+      Geolocation.getCurrentPosition(
+        (position:any) => {
+          setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+        },
+        (error:any) => {
+          console.log(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      );
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
   const fetchData = async () => {
     try {
       const toToken = `Bearer ${token}`;
@@ -142,27 +171,11 @@ const MapScreen = () => {
   };
   useEffect(() => {
     fetchData();
-    StatusCode();
   }, []);
 
-  const onPress = async (event: any) => {
-    const {geometry} = event;
-    const longitude = geometry.coordinates[0];
-    const latitude = geometry.coordinates[1];
-    try {
-      const response = await fetch(
-        `https://apis.mapmyindia.com/advancedmaps/v1/${'b7007d03ff55240db694b0b7563fc5c5'}/rev_geocode?lat=${latitude}&lng=${longitude}`,
-      );
-      const data = await response.json();
-      console.log(data, 'datatat');
-      if (data.results && data.results.length > 0) {
-        const address = data.results[0].formatted_address;
-        console.log('Address:', address);
-      }
-    } catch (error) {
-      console.error('Error fetching address:', error);
-    }
-  };
+  const handleStatusData=()=>{
+    setModalVisibleStatusCode(true);
+  }
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -173,17 +186,7 @@ const MapScreen = () => {
   const closeUnitModal = () => {
     setUnitModalVisible(false);
   };
-  const StatusCode = async () => {
-    try {
-      const response = await axios.get(
-        baseUrl + '/cad/api/v2/unit/statuscodes',
-        header,
-      );
-      setStatusCodeData(response.data); 
-    } catch (err) {
-      console.log(err, 'my errorr');
-    }
-  };
+
   const handleMarkerEventsClick = async (id: string) => {
     try {
       const toToken = `Bearer ${token}`;
@@ -221,22 +224,6 @@ const MapScreen = () => {
       setLoading(false);
     }
   };
-  const marker = [
-    {
-      id: 'marker30',
-      coordinate: [80.94, 26.85],
-    },
-  ];
-  const marker1: Marker[] = [
-    {
-      id: 'marker1',
-      coordinate: [79, 26],
-    },
-    {
-      id: 'marker2',
-      coordinate: [83.069660604235665, 26.33857106608006],
-    },
-  ];
 
   return (
     <View style={{flex: 1}}>
@@ -254,7 +241,7 @@ const MapScreen = () => {
             activeTab={activeTab}
             handleMarkerEventsClick={handleMarkerEventsClick}
             handleMarkerUnitClick={handleMarkerUnitClick}
-            statusCodeData={statusCodeData}
+            currentLocation={currentLocation}
           />
         ) : (
           <MapBox
@@ -264,7 +251,6 @@ const MapScreen = () => {
             eventData={eventData}
             handleMarkerEventsClick={handleMarkerEventsClick}
             handleMarkerUnitClick={handleMarkerUnitClick}
-            statusCodeData={statusCodeData}
             currentLocation={currentLocation}
           />
         )}
@@ -424,7 +410,7 @@ const MapScreen = () => {
         transparent={true}
         visible={modalVisibleStatusCode}
         onRequestClose={closeModalStatusCode}>
-        <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={statusCodeData}/>
+        <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={unitsStatusCode}/>
       </Modal>
       <View
         style={{
@@ -458,13 +444,14 @@ const MapScreen = () => {
               color={colors.white}
             />
           </View>
-          <Text style={{color: colors.grayTextColor,marginHorizontal:20}}>{getUnitStatus(user)?.description||''}</Text>
+          <Text style={{color: colors.grayTextColor,marginHorizontal:20}}>{getUnitStatus(user)?.description}</Text>
           <SimpleLineIcons
             name="refresh"
             size={20}
             color={colors.grayBorderColor}
           />
-          <TouchableOpacity  onPress={() => setModalVisibleStatusCode(true)}
+          <TouchableOpacity 
+           onPress={handleStatusData}
             style={{
               height: 35,
               width: 35,
@@ -481,7 +468,6 @@ const MapScreen = () => {
               name="chevron-small-down"
               size={20}
               color={colors.grayBorderColor}
-             
             />
           </TouchableOpacity>
 

@@ -21,9 +21,9 @@ import { OneSignal } from "react-native-onesignal";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const productionData = route.params;
-  console.log(productionData, "productiondatatat");
+  const { login, getUser} = useAuth();
+  
 
-  const { login, getUser, user } = useAuth();
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,6 @@ const LoginScreen = ({ navigation, route }: any) => {
       const token = await login(userId, password);
       if (token) {
         getUser(unitId);
-        console.log(user, "userr");
         navigation.replace("BottomNavigation");
       } else {
         console.error("Login failed: Invalid credentials");
@@ -60,9 +59,9 @@ const LoginScreen = ({ navigation, route }: any) => {
   };
 
   const initialValues = {
-    userId: "",
-    unitId: "",
-    password: "",
+    userId: "wgc",
+    unitId: "ABN1661",
+    password: "112",
     // userId: 'wgc',
     // unitId: 'ABN1661',
     // password: '112',

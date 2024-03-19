@@ -14,6 +14,8 @@ type User =
       unitId: string;
       assignedAgencyEventId: string;
       status: number;
+      beat:string;
+      desciption:string
     }
   | undefined;
 
@@ -66,7 +68,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   const getUser = async (unitId: string) => {
-    setUnitId(unitId);
+    setUnitIdToStorage(unitId)
     try {
       const toToken = `Bearer ${token}`;
       console.log(toToken, "to toknenenne");
@@ -129,7 +131,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     events();
-    if (token && unitId) {
+    if (token && unitId) { 
       getUser(unitId);
     }
   }, [unitId, token]);
@@ -171,9 +173,11 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("token");
+      // await AsyncStorage.removeItem("unitId");
       setToken(null);
+      setUnitId(null);
       setUser(undefined);
-      setEventData(undefined);
+      // setEventData(undefined);
     } catch (error) {
       console.error("Error removing token from AsyncStorage:", error);
     }
@@ -182,7 +186,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     axios
       .post(baseUrl + "/cad/api/v2/unit/logoff", data, header)
       .then((res) => {
-        console.log(res, "response");
         logout();
       })
       .catch((err) => {
@@ -201,7 +204,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         })
         .then((res) => {
           setEventData(res.data);
-          // console.log(res.data,"eventstsdattatt");
         });
     } catch (error) {
       console.log("error eventsss", error);

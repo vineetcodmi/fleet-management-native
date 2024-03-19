@@ -23,6 +23,8 @@ import { useAuth } from "../context/Auth";
 import axios from "axios";
 import DispatchNotifications from "../screens/Notification/DispatchNotification";
 import Sound from "react-native-sound";
+import FieldEvents from "../screens/Dashboard/FieldEvents";
+import { EventsProvider } from "../context/Events";
 
 const Stack = createNativeStackNavigator();
 
@@ -95,7 +97,7 @@ const RootStack = () => {
   }, [user]);
 
   return (
-    <>
+   <EventsProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -218,6 +220,11 @@ const RootStack = () => {
             component={BottomNavigation}
             options={{ headerShown: false }}
           />
+           <Stack.Screen
+            name="FieldEvents"
+            component={FieldEvents}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="AppDrawer"
             component={AppDrawer}
@@ -240,7 +247,7 @@ const RootStack = () => {
           notificationSound={notificationSoundPlay}
         />
       </Modal>
-    </>
+      </EventsProvider>
   );
 };
 

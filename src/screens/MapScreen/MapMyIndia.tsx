@@ -20,13 +20,15 @@ const MapMyIndia = ({
   activeTab,
   handleMarkerEventsClick,
   handleMarkerUnitClick,
-  statusCodeData,
+  currentLocation
 }: any) => {
+
+  
   const { user } = useAuth();
   const mmiRef = useRef<any>(null);
   const [eventClusteredData, setEventClusteredData] = useState<any>([]);
   const [unitClusteredData, setUnitClusteredData] = useState<any>([]);
-  const [zoomLevel, setZoomLevel] = useState<number>(3);
+  const [zoomLevel, setZoomLevel] = useState<number>(8);
   const [region, setRegion] = useState<[number, number, number, number]>([
     0, 0, 0, 0,
   ]);
@@ -43,13 +45,16 @@ const MapMyIndia = ({
   }, [eventMarker, unitMarker, zoomLevel, region]);
 
   const clusterMarkers = (
-    markers: any[],
+    markers: any[] | undefined,
     zoomLevel: number,
     currentRegion: [number, number, number, number],
   ) => {
     const CLUSTER_RADIUS = calculateClusterRadius(zoomLevel); // Calculate cluster radius based on zoom level
 
     const clusteredMarkers: any[] = [];
+    if (!markers || markers.length === 0) {
+      return []; // Return empty array if markers is undefined or empty
+    }
 
     markers.forEach(marker => {
       const [lon, lat] = marker.coordinate;
@@ -246,10 +251,12 @@ const MapMyIndia = ({
         // onPress={handleZoomChange}
       >
         <MapmyIndiaGL.Camera
-          zoomLevel={3}
+          zoomLevel={4}
           // minZoomLevel={4}
           // maxZoomLevel={15}
           centerCoordinate={[78, 26]}
+          // centerCoordinate={currentLocation}
+          
         />
         <MapmyIndiaGL.PointAnnotation
           key={'current-location-marker'}

@@ -69,6 +69,9 @@ const Data = [
 
 const Report = ({dispatchEvents}: any) => {
   const{ user, token }=useAuth();
+
+  console.log(user,"usrer");
+  
   const [currentAssignedEvent, setCurrentAssignedEvent] = useState<any>();
 
   useEffect(()=>{

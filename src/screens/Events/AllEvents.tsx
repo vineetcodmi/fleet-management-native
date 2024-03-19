@@ -1,6 +1,9 @@
 import React from 'react';
 import FlatListData from '../../components/inputs/CustomFlatList';
 import {View} from 'react-native';
+import { useAuth } from '../../context/Auth';
+
+
 
 const Data = [
   {
@@ -58,6 +61,7 @@ const Data = [
 ];
 
 const AllEvents = ({data, searchQuery,sortDirection,handleSorting}:any) => {
+
   
   return (
     <View style={{paddingBottom: 175}}>

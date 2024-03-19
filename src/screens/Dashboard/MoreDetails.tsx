@@ -9,7 +9,7 @@ const Deatils=({navigation}:any)=>{
   const handlelogout=()=>{
     logout();
     if(!token){
-      navigation.navigate('LoginScreen');
+      navigation.replace('LoginScreen');
     }
   }
   return(

@@ -7,6 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
   Modal,
+  Platform,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -15,21 +16,27 @@ import { FlatList } from "react-native";
 import DispatchNotifications from "../../screens/Notification/DispatchNotification";
 import moment from "moment";
 import Event from "../../screens/Notification/Event";
+import { useNavigation } from "@react-navigation/native";
+import { useEvents } from "../../context/Events";
+import { useAuth } from "../../context/Auth";
 
 const FlatListData = ({
   data,
   searchQuery,
   sortDirection,
   handleSorting,
-  navigation,
 }: any) => {
-  console.log(searchQuery, "serach quererre");
-  console.log(data, "dtaatatata");
-  console.log(sortDirection, "directionss");
+  const navigation =useNavigation();
+  const{eventStatusCode}=useEvents();
+  const{user}=useAuth();
 
   const [ismodalVisible, setIsModalVisible] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
 
+  const getUnitStatus = (unit:any) => {    
+    const currentStatus = eventStatusCode?.filter((status:any) => status?.id === unit?.status)?.[0];
+    return currentStatus;
+  }
   useEffect(() => {
     const filterAndSortData = () => {
       let filtered = data;
@@ -70,7 +77,18 @@ const FlatListData = ({
   const handleNotificationIcon = () => {
     setIsModalVisible(true);
   };
-  const handleOpenEventDetails = () => {};
+  const handleOpenEventDetails = (item:any) => {
+    navigation.navigate('Event', { item:item });
+  };
+  const handleOpenMap = () => {
+    if (Platform.OS === 'android') {
+      Linking.openURL('https://www.google.com/maps');
+    } else if (Platform.OS === 'ios') {
+      Linking.openURL('maps://');
+    } else {
+      console.log("Maps are not supported on this platform.");
+    }
+  };
 
   const renderItem = (item: any) => {
     return (
@@ -102,6 +120,7 @@ const FlatListData = ({
                   name="map"
                   color={colors.tabBackgroundColor}
                   size={18}
+                  onPress={handleOpenMap}
                 />
               </View>
               <View style={styles.iconContainer}>
@@ -109,7 +128,7 @@ const FlatListData = ({
                   name="open-in-new"
                   color={colors.tabBackgroundColor}
                   size={22}
-                  onPress={handleOpenEventDetails}
+                  onPress={() => handleOpenEventDetails(item)}
                 />
               </View>
             </View>
@@ -183,7 +202,7 @@ const FlatListData = ({
                   size={17}
                 />
                 <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                  Pending
+                {getUnitStatus(user)?.status}
                 </Text>
               </View>
               <View style={styles.POcontainer}>
@@ -200,7 +219,7 @@ const FlatListData = ({
               </View>
               <View style={styles.dateContainer}>
                 <Text style={{ color: colors.textBlueColor }}>
-                  {moment(item.createdTime).format("DD/MM/YYYY - HH:mm")}
+                  {moment(item?.createdTime).format("DD/MM/YYYY - HH:mm")}
                 </Text>
               </View>
             </View>
@@ -216,7 +235,7 @@ const FlatListData = ({
         data={filteredData}
         renderItem={({ item }: any) => renderItem(item)}
         // keyExtractor={(item) => item.location}
-        ListEmptyComponent={<ActivityIndicator color="gray" />}
+        ListEmptyComponent={<ActivityIndicator color={colors.textBlueColor}  />}
       />
       <Modal animationType="slide" transparent={true} visible={ismodalVisible}>
         <DispatchNotifications closeModal={closeModal} />
