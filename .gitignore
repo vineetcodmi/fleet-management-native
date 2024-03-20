@@ -1,2 +1,37 @@
-/node_modules
-/ios/Pods
+# OSX
+.DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Gradle
+.gradle/
+build/
+
+# Android
+android/app/build/
+android/gradle.properties
+android/local.properties
+android/.idea
+android/captures/
+
+# iOS
+ios/Pods/
+ios/Podfile.lock
+ios/build/
+ios/*.xcworkspace/
+ios/*.xcodeproj/xcuserdata/
+
+# Dependency directories
+/jspm_packages/
+/bower_components/
+/node_modules/
+/pnpm-lock.yaml
+/yarn.lock
+
+# Miscellaneous
+.idea/
+.vscode/
+/.expo

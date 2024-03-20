@@ -3,6 +3,7 @@ import {Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-
 import MapmyIndiaGL from 'mapmyindia-map-react-native-beta';
 import colors from '../../utlits/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from '../../context/Auth';
 
 MapmyIndiaGL.setMapSDKKey('b7007d03ff55240db694b0b7563fc5c5'); //place your mapsdkKey
@@ -20,7 +21,8 @@ const MapMyIndia = ({
   activeTab,
   handleMarkerEventsClick,
   handleMarkerUnitClick,
-  currentLocation
+  currentLocation,
+  isEventDetail
 }: any) => {
 
   
@@ -143,7 +145,7 @@ const MapMyIndia = ({
   const createCurrentLocationIcon = () => {
     return (
       <Pressable style={styles.currentLocationWrapper} onPress={() => handleMarkerUnitClick(user?.unitId)}>
-        <View style={styles.markerWrapper}>
+        {!isEventDetail ? <View style={styles.markerWrapper}>
           <View style={styles.clusterMarkerContent}>
             <View
               style={[
@@ -157,7 +159,7 @@ const MapMyIndia = ({
           <View style={styles.unitIconBox}>
             <Ionicons name="car-outline" size={17} color={colors.white} />
           </View>
-        </View>
+        </View> : <Entypo name="dot-single" size={26} color={colors.black} />}
       </Pressable>
     );
   };
@@ -239,9 +241,6 @@ const MapMyIndia = ({
   useEffect(() => {
     handleZoomChange();
   },[mmiRef?.current])
-
-  // console.log(activeTab, eventClusteredData, unitClusteredData, eventMarker, unitMarker, "activeTab");
-
 
   return (
     <View style={{flex: 1}}>
