@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import colors from '../../utlits/colors';
 import {useAuth} from '../../context/Auth';
 import axios from 'axios';
@@ -25,12 +24,12 @@ type StatusIcons = {
 };
 const statusIcons: StatusIcons = {
   0: 'car-outline',
-  1: 'user',
-  2: 'check-square',
-  3: 'run',
-  4: 'phone-outline',
-  5: 'emergency',
-  6: 'home',
+  1: 'car-outline',
+  2: 'car-outline',
+  3: 'car-outline',
+  4: 'car-outline',
+  5: 'car-outline',
+  6: 'car-outline',
 };
 const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
   
@@ -136,6 +135,7 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             borderBottomWidth: 1,
+            borderBottomColor:colors.grayBorderColor,
             paddingVertical: 18,
             paddingHorizontal: 18,
           }}>

@@ -21,16 +21,19 @@ import { useEvents } from "../../context/Events";
 import { useAuth } from "../../context/Auth";
 
 const FlatListData = ({ data }: any) => {
-  const navigation =useNavigation();
-  const{eventStatusCode}=useEvents();
-  const{user}=useAuth();
+  const navigation = useNavigation();
+  const { eventStatusCode } = useEvents();
+  const { user } = useAuth();
 
   const [ismodalVisible, setIsModalVisible] = useState(false);
 
-  const getUnitStatus = (unit:any) => {    
-    const currentStatus = eventStatusCode?.filter((status:any) => status?.id === unit?.status)?.[0];
+  const getUnitStatus = (unit: any) => {
+    const currentStatus = eventStatusCode?.filter(
+      (status: any) => status?.id === unit?.status
+    )?.[0];
     return currentStatus;
-  }
+  };
+
 
   const closeModal = () => {
     setIsModalVisible(false);
@@ -41,20 +44,41 @@ const FlatListData = ({ data }: any) => {
   const handleNotificationIcon = () => {
     setIsModalVisible(true);
   };
-  const handleOpenEventDetails = (item:any) => {
-    navigation.navigate('Event', { item:item });
+  const handleOpenEventDetails = (item: any) => {
+    navigation.navigate("Event", { item: item });
   };
   const handleOpenMap = () => {
-    if (Platform.OS === 'android') {
-      Linking.openURL('https://www.google.com/maps');
-    } else if (Platform.OS === 'ios') {
-      Linking.openURL('maps://');
+    if (Platform.OS === "android") {
+      Linking.openURL("https://www.google.com/maps");
+    } else if (Platform.OS === "ios") {
+      Linking.openURL("maps://");
     } else {
       console.log("Maps are not supported on this platform.");
     }
   };
 
-  const renderItem = (item: any) => {
+  const renderItem = (item: any) => { 
+    const location = item?.location;
+    const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
+    const match = location.match(pattern);
+    let latitude = "";
+    let longitude = "";
+  
+    if (match) {
+      const [latString, lngString] = match.slice(1);
+      const latParts = latString.split(':').map(parseFloat);
+      const lngParts = lngString.split(':').map(parseFloat);
+      latitude = (
+        latParts[0] +
+        latParts[1] / 60 +
+        latParts[2] / 3600
+      ).toFixed(4);
+      longitude = (
+        lngParts[0] +
+        lngParts[1] / 60 +
+        lngParts[2] / 3600
+      ).toFixed(4);
+    }
     return (
       <View style={styles.container}>
         <View style={styles.contentContainer}>
@@ -105,38 +129,40 @@ const FlatListData = ({ data }: any) => {
             <Text style={styles.leftText}>Event Sub Type</Text>
             <Text style={styles.rightText}> {item.agencyEventSubtypeCode}</Text>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              marginTop: 10,
-            }}
-          >
+
             <View
               style={{
-                width: "50%",
+                flexDirection: "row",
+                marginTop: 10,
               }}
             >
-              <Text style={styles.latLongText}>LAT</Text>
-              <View style={styles.latContainer}>
-                <Text style={{ color: colors.textBlueColor }}>80.9998</Text>
+              <View
+                style={{
+                  width: "50%",
+                }}
+              >
+                <Text style={styles.latLongText}>LAT</Text>
+                <View style={styles.latContainer}>
+                  <Text style={{ color: colors.textBlueColor }}>{latitude}</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  width: "50%",
+                }}
+              >
+                <Text style={styles.latLongText}>LONG</Text>
+                <View style={styles.longContainer}>
+                  <Text style={{ color: colors.textBlueColor }}>{longitude}</Text>
+                </View>
               </View>
             </View>
-            <View
-              style={{
-                width: "50%",
-              }}
-            >
-              <Text style={styles.latLongText}>LONG</Text>
-              <View style={styles.longContainer}>
-                <Text style={{ color: colors.textBlueColor }}>81.9998</Text>
-              </View>
-            </View>
-          </View>
+          
           <View style={styles.callerContainer}>
             <View>
               <Text style={{ color: colors.textBlueColor }}>
-                7989898989
-                {/* {item?.callData?.callerName} */}
+                {/* 7989898989 */}
+                {item?.callData?.callerName}
               </Text>
               <Text style={{ color: "#344054" }}>Caller Number</Text>
             </View>
@@ -166,7 +192,7 @@ const FlatListData = ({ data }: any) => {
                   size={17}
                 />
                 <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                {getUnitStatus(user)?.status}
+                  {getUnitStatus(user)?.status}
                 </Text>
               </View>
               <View style={styles.POcontainer}>
@@ -199,7 +225,7 @@ const FlatListData = ({ data }: any) => {
         data={data}
         renderItem={({ item }: any) => renderItem(item)}
         // keyExtractor={(item) => item.location}
-        ListEmptyComponent={<ActivityIndicator color={colors.textBlueColor}  />}
+        ListEmptyComponent={<ActivityIndicator color={colors.textBlueColor} />}
       />
       <Modal animationType="slide" transparent={true} visible={ismodalVisible}>
         <DispatchNotifications closeModal={closeModal} />

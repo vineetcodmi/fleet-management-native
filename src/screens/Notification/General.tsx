@@ -10,6 +10,8 @@ import {
   Switch,
   Platform,
   PermissionsAndroid,
+  Linking,
+  ActivityIndicator,
 } from "react-native";
 import colors from "../../utlits/colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -23,10 +25,15 @@ import { useAuth } from "../../context/Auth";
 import Geolocation from "@react-native-community/geolocation";
 import MapBox from "../MapScreen/MapBox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { baseUrl } from "../../config";
 
+interface Event {
+  comments: string;
+}
 const General = ({ data }: any) => {
   const { eventStatusCode } = useEvents();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
   const [openCommentModal, setOpenCommentModal] = useState(false);
@@ -35,11 +42,20 @@ const General = ({ data }: any) => {
   const [markersEvents, setMarkersEvents] = useState<any>([]);
   const [comment, setComment] = useState("");
   const [selectedMap, setSelectedMap] = useState<string>("mapMyIndia");
+  const [eventData, setEventData] = useState<Event>();
+  const [loading, setLoading] = useState(false);
+  const[isComment,setIscomment]=useState<boolean>();
+  // const { latDiff, lngDiff } = extractLatLongDiff(location);
   const [cases, setCases] = useState([
     { label: "Case 1", value: "case1" },
     { label: "Case 2", value: "case2" },
     { label: "Case 3", value: "case3" },
   ]);
+  const header = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
 
   useEffect(() => {
     fetchMap();
@@ -50,34 +66,36 @@ const General = ({ data }: any) => {
     if (data) {
       const location = data?.location;
       const id = data?.agencyEventId;
-      const pattern =
-        /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
+      const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
       const match = location.match(pattern);
       if (match) {
         const [latString, lngString] = match.slice(1);
-        const latParts = latString.split(':').map(parseFloat);
-        const lngParts = lngString.split(':').map(parseFloat);
+        const latParts = latString.split(":").map(parseFloat);
+        const lngParts = lngString.split(":").map(parseFloat);
         const lat = (
           latParts[0] +
           latParts[1] / 60 +
           latParts[2] / 3600
-        ).toFixed(2);
+        ).toFixed(4);
         const lng = (
           lngParts[0] +
           lngParts[1] / 60 +
           lngParts[2] / 3600
-        ).toFixed(2);
-        setMarkersEvents([{ id: data?.agencyEventId, coordinate: [parseFloat(lat), parseFloat(lng)] }])
+        ).toFixed(4);
+        setMarkersEvents([
+          {
+            id: data?.agencyEventId,
+            coordinate: [parseFloat(lat), parseFloat(lng)],
+          },
+        ]);
       }
     }
   }, [data]);
 
-  const fetchMap = async() => {
-    const map:any = await AsyncStorage.getItem("map");
-    console.log(map, "k");
-    
+  const fetchMap = async () => {
+    const map: any = await AsyncStorage.getItem("map");
     setSelectedMap(map);
-  }
+  };
 
   const handleCaseChange = (value: any) => {
     setSelectedCase(value);
@@ -92,40 +110,46 @@ const General = ({ data }: any) => {
 
   const getCurrentLocation = async () => {
     try {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Location Permission',
-            message: 'This app needs access to your location.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
+            title: "Location Permission",
+            message: "This app needs access to your location.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
+          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           Geolocation.getCurrentPosition(
             (position: any) => {
-              setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+              setCurrentLocation([
+                position.coords.latitude,
+                position.coords.longitude,
+              ]);
             },
             (error: any) => {
               console.log(error.code, error.message);
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
           );
         } else {
-          console.log('Location permission denied');
+          console.log("Location permission denied");
         }
       } else {
         // For iOS, location permission is requested when the app is in use.
         Geolocation.getCurrentPosition(
           (position: any) => {
-            setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+            setCurrentLocation([
+              position.coords.latitude,
+              position.coords.longitude,
+            ]);
           },
           (error: any) => {
             console.log(error.code, error.message);
           },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
       }
     } catch (err) {
@@ -137,27 +161,77 @@ const General = ({ data }: any) => {
     setOpenCommentModal(false);
   };
 
+  const handleCall = () => {
+    Linking.openURL(`tel:${data?.callerNumber}`);
+  };
+
+  useEffect(() => {
+    Events();
+  }, []);
+
+  const Events = async () => {
+    const id = data.agencyEventId;
+    try {
+      const toToken = `Bearer ${token}`;
+      axios
+        .get(baseUrl + `/cad/api/v2/event/${id}`, {
+          headers: {
+            Authorization: toToken,
+          },
+        })
+        .then((res) => {
+          setEventData(res.data);
+        });
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+  const handleSubmit = async () => {
+    const id = data.agencyEventId;
+    try {
+      setLoading(true);
+      await axios
+        .post(
+          baseUrl + `/cad/api/v2/event/${id}/comment`,
+          {
+            remark: comment,
+          },
+          header
+        )
+        .then((res) => {
+          setOpenCommentModal(false);
+          setIscomment(!isComment)
+        });
+    } catch (error) {
+      setLoading(false);
+      console.error("Error logging in:", error);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 0.4 }}>
-        {selectedMap === "mapMyIndia" ? <MapMyIndia
-          eventMarker={markersEvents}
-          unitMarker={[]}
-          activeTab={"Events"}
-          handleMarkerEventsClick={() => { }}
-          handleMarkerUnitClick={() => { }}
-          currentLocation={currentLocation}
-          isEventDetail={true}
-        /> : <MapBox
-          eventMarker={markersEvents}
-          unitMarker={[]}
-          activeTab={"Events"}
-          handleMarkerEventsClick={() => { }}
-          handleMarkerUnitClick={() => { }}
-          currentLocation={currentLocation}
-          isEventDetail={true}
-        />}
+        {selectedMap === "mapMyIndia" ? (
+          <MapMyIndia
+            eventMarker={markersEvents}
+            unitMarker={[]}
+            activeTab={"Events"}
+            handleMarkerEventsClick={() => {}}
+            handleMarkerUnitClick={() => {}}
+            currentLocation={currentLocation}
+            isEventDetail={true}
+          />
+        ) : (
+          <MapBox
+            eventMarker={markersEvents}
+            unitMarker={[]}
+            activeTab={"Events"}
+            handleMarkerEventsClick={() => {}}
+            handleMarkerUnitClick={() => {}}
+            currentLocation={currentLocation}
+            isEventDetail={true}
+          />
+        )}
       </View>
       <ScrollView style={{ flex: 0.7 }}>
         <View style={styles.container}>
@@ -218,32 +292,35 @@ const General = ({ data }: any) => {
               <Text style={styles.leftText}>X-Street 2</Text>
               <Text style={styles.rightText}> -</Text>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-              }}
-            >
+            {markersEvents.map((item:any) => (
               <View
                 style={{
-                  width: "50%",
+                  flexDirection: "row",
                 }}
               >
-                <Text style={styles.latLongText}>LAT</Text>
-                <View style={styles.latContainer}>
-                  <Text style={{ color: colors.textBlueColor }}>80.9998</Text>
+                <View
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <Text style={styles.latLongText}>LAT</Text>
+                  <View style={styles.latContainer}>
+                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[0]}</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <Text style={styles.latLongText}>LONG</Text>
+                  <View style={styles.longContainer}>
+                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[1]}</Text>
+                  </View>
                 </View>
               </View>
-              <View
-                style={{
-                  width: "50%",
-                }}
-              >
-                <Text style={styles.latLongText}>LONG</Text>
-                <View style={styles.longContainer}>
-                  <Text style={{ color: colors.textBlueColor }}>81.9998</Text>
-                </View>
-              </View>
-            </View>
+            ))}
+
             <View
               style={{
                 borderTopWidth: 1,
@@ -301,12 +378,15 @@ const General = ({ data }: any) => {
             <View style={styles.callerContainer}>
               <View>
                 <Text style={{ color: colors.textBlueColor }}>
-                  7989898989
+                  {data?.callData?.callerPhoneNumber}
                   {/* {item?.callData?.callerName} */}
                 </Text>
                 <Text style={{ color: "#344054" }}>Caller Number</Text>
               </View>
-              <Pressable style={styles.iconContainer}>
+              <Pressable
+                style={styles.iconContainer}
+                onPress={() => handleCall()}
+              >
                 <MaterialIcons
                   name="call"
                   color={colors.tabBackgroundColor}
@@ -498,7 +578,7 @@ const General = ({ data }: any) => {
               }}
             >
               <Text style={{ color: colors.white, textAlign: "center" }}>
-                3
+                {eventData?.comments ? eventData.comments.length : 0}
               </Text>
             </View>
           </View>
@@ -510,40 +590,55 @@ const General = ({ data }: any) => {
               borderColor: colors.grayBorderColor,
             }}
           >
-            <View style={{ padding: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={styles.rowLeft}>
+            <View style={{}}>
+              {eventData?.comments && eventData.comments.length > 0 ? (
+                eventData.comments.map((comment: any, index: any) => (
                   <View
+                    key={index}
                     style={{
-                      height: 35,
-                      width: 35,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: colors.redIcon,
+                      padding: 8,
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.grayBorderColor,
                     }}
                   >
-                    <MaterialIcons
-                      name="info-outline"
-                      color={colors.white}
-                      size={22}
-                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <View style={styles.rowLeft}>
+                        <View
+                          style={{
+                            height: 35,
+                            width: 35,
+                            borderRadius: 20,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: colors.redIcon,
+                          }}
+                        >
+                          <MaterialIcons
+                            name="info-outline"
+                            color={colors.white}
+                            size={22}
+                          />
+                        </View>
+                        <Text style={styles.notificationText}>{data.beat}</Text>
+                      </View>
+                      <Text>
+                        {moment(comment?.createdTime).format(
+                          "DD/MM/YYYY - HH:mm"
+                        )}
+                      </Text>
+                    </View>
+                    <Text style={{ marginTop: 10 }}>{comment.commentText}</Text>
                   </View>
-                  <Text style={styles.notificationText}> LKWO3</Text>
-                </View>
-                <Text>02/02/2024 -17:01:24</Text>
-              </View>
-              <Text style={{ marginTop: 10 }}>
-                Lorem Ipsum has been the industry's standard dummy text ever
-                since the 1500s,when an unknown printer took a galley of type
-                and scrambled it to make a type specimen book
-              </Text>
+                ))
+              ) : (
+                <Text>No comments available</Text>
+              )}
             </View>
 
             <View
@@ -551,15 +646,13 @@ const General = ({ data }: any) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 padding: 8,
-                borderTopWidth: 1,
-                borderTopColor: colors.grayBorderColor,
                 alignItems: "center",
               }}
             >
               <Text style={{ color: "#344054" }}>Add Comment</Text>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => setOpenCommentModal()}
+                onPress={() => setOpenCommentModal(true)}
               >
                 <MaterialIcons name="add" size={20} color={colors.white} />
                 <Text style={styles.buttonText}>Add</Text>
@@ -704,6 +797,7 @@ const General = ({ data }: any) => {
                 placeholder="Enter here"
                 multiline
                 value={comment}
+                onChangeText={(text) => setComment(text)}
               />
             </View>
             <View
@@ -753,6 +847,7 @@ const General = ({ data }: any) => {
               />
             </View>
             <TouchableOpacity
+              onPress={handleSubmit}
               style={{
                 paddingHorizontal: 8,
                 paddingVertical: 8,
@@ -764,6 +859,7 @@ const General = ({ data }: any) => {
               }}
             >
               <Text style={styles.buttonText}>Submit</Text>
+              {loading && <ActivityIndicator color="white" />}
             </TouchableOpacity>
           </View>
         </View>

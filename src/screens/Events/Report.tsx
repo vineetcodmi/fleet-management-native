@@ -1,71 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import FlatListData from '../../components/inputs/CustomFlatList';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text} from 'react-native';
 import colors from '../../utlits/colors';
 import { useAuth } from '../../context/Auth';
 import { baseUrl } from '../../config';
 import axios from 'axios';
-
-
-
-const Data = [
-  {
-    id: '1',
-    notificationText: 'P535535535',
-    notificationAlert: 'blue',
-    assignName: 'Current Assign',
-    eventType: 'Accident',
-    eventSubType: 'Road Accident',
-    callerName: 'Subham Kumar',
-    callerNumber: '9373738388',
-    lat: '2029',
-    long: '2029',
-    status: 'Pending',
-    po: '17/07/2023 -18:033',
-  },
-  {
-    id: '2',
-    notificationText: 'P535535535',
-    notificationAlert: 'orange',
-    assignName: 'Dispatch Assign',
-    eventType: 'Accident',
-    eventSubType: 'Road Accident',
-    callerName: 'Subham Kumar',
-    callerNumber: '9373738388',
-    lat: '2029',
-    long: '2029',
-    status: 'Pending',
-    po: '17/07/2023 -18:033',
-  },
-  {
-    id: '3',
-    notificationText: 'P535535535',
-    assignName: 'Dispatch Assign',
-    notificationAlert: 'orange',
-    eventType: 'Accident',
-    eventSubType: 'Road Accident',
-    callerName: 'Subham Kumar',
-    callerNumber: '9373738388',
-    lat: '2029',
-    long: '2029',
-    status: 'Pending',
-    po: '17/07/2023 -18:033',
-  },
-  {
-    id: '4',
-    notificationText: 'P53553553e',
-    assignName: 'Dispatch Assign',
-    notificationAlert: 'orange',
-    eventType: 'Accident',
-    eventSubType: 'Road Accident',
-    callerName: 'Subham Kumar',
-    callerNumber: '9373738388',
-    lat: '2029',
-    long: '2029',
-    status: 'Pending',
-    po: '17/07/2023 -18:033',
-  },
-];
 
 const Report = ({dispatchEvents}: any) => {
   const{ user, token }=useAuth();

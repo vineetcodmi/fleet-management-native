@@ -175,9 +175,6 @@ const MapScreen = () => {
     fetchData();
   }, []);
 
-  const handleStatusData=()=>{
-    setModalVisibleStatusCode(true);
-  }
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -219,7 +216,6 @@ const MapScreen = () => {
         .then(res => {
           setUnitData(res.data);
           setUnitModalVisible(true);
-          console.log(res.data, 'unit datattata');
         });
     } catch (error) {
       console.log(error, 'error');
@@ -411,7 +407,8 @@ const MapScreen = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisibleStatusCode}
-        onRequestClose={closeModalStatusCode}>
+        onRequestClose={closeUnitModal}
+       >
         <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={unitsStatusCode}/>
       </Modal>
       <View
@@ -453,7 +450,7 @@ const MapScreen = () => {
             color={colors.grayBorderColor}
           />
           <TouchableOpacity 
-           onPress={handleStatusData}
+           onPress={()=>setModalVisibleStatusCode(true)}
             style={{
               height: 35,
               width: 35,
@@ -466,8 +463,8 @@ const MapScreen = () => {
               marginHorizontal:20,
               
             }}>
-            <Entypo
-              name="chevron-small-down"
+            <MaterialIcons
+              name="keyboard-arrow-down"
               size={20}
               color={colors.grayBorderColor}
             />
@@ -476,7 +473,6 @@ const MapScreen = () => {
           <View
             style={{
               height: 35,
-              width: '24%',
               borderRadius: 20,
               backgroundColor: colors.grayBackgroundColor,
               borderColor: colors.grayBorderColor,
@@ -485,10 +481,10 @@ const MapScreen = () => {
               alignItems: 'center',
             }}>
             <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'center'}}>
-              <Text style={{color: colors.grayTextColor,fontSize:12,marginLeft:10}}>{user?.beat}</Text>
+              <Text style={{color: colors.grayTextColor,fontSize:12,marginLeft:20}}>{user?.beat}</Text>
               <MaterialIcons
                 name="keyboard-arrow-right"
-                size={25}
+                size={30}
                 color={colors.grayBorderColor}
               />
             </View>

@@ -10,7 +10,7 @@ const SplashScreen = ({navigation}: any) => {
     <View style={styles.container}>
       <Text style={{fontWeight:'bold',fontSize:40}}> 
 
-        Fleet 
+      IntergraphMobileResponder-I
         </Text>
       {/* <Image
         source={require('../../assets/download.jpeg')}
