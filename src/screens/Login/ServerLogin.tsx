@@ -14,16 +14,17 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useAuth } from "../../context/Auth";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
-import { baseUrl } from "../../config";
+import { useValidateConfigureServer } from "../../services/querries/server";
 
 const ServerLogin = ({ route, navigation }: any) => {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const [productionScannedData, setProductionScannedData] = useState("");
+  const [selectedServer, setSelectedServer] = useState("");
   const [loading, setLoading] = useState(false);
   const [educationScannedData, setEducationScannedData] = useState("");
   const serverKey = route.params?.serverKey;
   const scannedData = route.params?.scannedData || "";
+  const { mutateAsync: validateConfigureServer } = useValidateConfigureServer();
 
   useEffect(() => {
     if (serverKey === "production") {
@@ -39,19 +40,17 @@ const ServerLogin = ({ route, navigation }: any) => {
     }
   }, [token]);
 
-  const handleServerProduction = () => {
+  const handleServerValidation = (values:any) => {
     try {
+      const server = values?.[selectedServer];
       setLoading(true);
-      const toToken = `Bearer${token}`;
-      axios
-        .get(baseUrl + "/cad/", {
-          headers: {
-            Authorization: toToken,
-          },
-        })
+      validateConfigureServer(server)
         .then((res) => {
-          const data = res.data;
-          navigation.replace("LoginScreen", { productionData: data });
+          navigation.replace("LoginScreen", { productionData: res });
+          setLoading(false)
+        }).catch((err)=> {
+          setLoading(false);
+          console.log(err, "error to connect production url");
         });
     } catch (error) {
       setLoading(false);
@@ -59,15 +58,14 @@ const ServerLogin = ({ route, navigation }: any) => {
     }
   };
 
-  const handleEducationServer = () => {
-    console.log("shhsghhsg");
-  };
   const handleProductionQrScanner = () => {
     navigation.navigate("QrScanner", { serverKey: "production" });
   };
+
   const handleEducationQrScanner = () => {
     navigation.navigate("QrScanner", { serverKey: "education" });
   };
+
   const validationSchema = Yup.object().shape({
     production: Yup.string()
       .matches(
@@ -106,7 +104,7 @@ const ServerLogin = ({ route, navigation }: any) => {
         <ScrollView>
           <Text style={styles.heading}>Configure Server Connections</Text>
           <Formik
-            onSubmit={handleServerProduction}
+            onSubmit={handleServerValidation}
             initialValues={initialValues}
             validationSchema={validationSchema}
           >
@@ -150,7 +148,10 @@ const ServerLogin = ({ route, navigation }: any) => {
                       ? styles.disabledButton
                       : null,
                   ]}
-                  onPress={() => handleSubmit()}
+                  onPress={() => {
+                    setSelectedServer("production")
+                    handleSubmit()
+                  }}
                 >
                   <Text style={styles.buttonText}>Connect to production</Text>
                   {loading && <ActivityIndicator color="white" />}
@@ -189,7 +190,10 @@ const ServerLogin = ({ route, navigation }: any) => {
                       ? styles.disabledButton
                       : null,
                   ]}
-                  // onPress={() => handleSubmit()}
+                  onPress={() => {
+                    setSelectedServer("education")
+                    handleSubmit()
+                  }}
                 >
                   <Text style={styles.buttonText}>Connect to Education</Text>
                 </TouchableOpacity>

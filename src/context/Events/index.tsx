@@ -5,9 +5,9 @@ import React, {
   FC,
   useEffect,
 } from "react";
-import axios from "axios";
-import { baseUrl } from "../../config";
-import { useAuth } from "../Auth";
+import { useGetAllUnitStatusCode } from "../../services/querries/unit";
+import { useGetAllEventStatusCode } from "../../services/querries/event";
+import { AxiosResponse } from "axios";
 
 type Event =
   | {
@@ -17,8 +17,8 @@ type Event =
     }
   | undefined;
 interface EventContextType {
-  unitsStatusCode: Event;
-  eventStatusCode:Event;
+  unitsStatusCode: Event | AxiosResponse;
+  eventStatusCode: Event | AxiosResponse;
 }
 
 const EventContext = createContext<EventContextType>({
@@ -32,45 +32,23 @@ interface EventsProviderProps {
 }
 
 export const EventsProvider: FC<EventsProviderProps> = ({ children }) => {
-  const [unitsStatusCode, setUnitsStatusCode] = useState<Event>();
-  const[eventStatusCode,setEventStatusCode]=useState<Event>();
-  const { token } = useAuth();
-  const header = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const StatusCode = async () => {
-
-    try {
-      const response = await axios.get(
-        baseUrl + "/cad/api/v2/unit/statuscodes",
-        header
-      );
-      setUnitsStatusCode(response.data);
-      console.log(response.data,"datatta of codesss");
-    } catch (err) {
-      console.log(err, "my errorr");
-    }
-  };
-
-  const StatusCodeEvents=async()=>{
-    try{
-      const response =await axios.get(
-        baseUrl +"/cad/api/v2/event/statuscodes",
-        header
-      );
-      setEventStatusCode(response.data)
-      }catch (err) {
-        console.log(err, "my errorr");
-      }
-  }
+  const [unitsStatusCode, setUnitsStatusCode] = useState<Event | AxiosResponse>();
+  const[eventStatusCode,setEventStatusCode]=useState<Event | AxiosResponse>();
+  const { data: unitStatusCodes } = useGetAllUnitStatusCode();
+  const { data: eventStatusCodes } = useGetAllEventStatusCode();
 
   useEffect(() => {
-    StatusCode();
-    StatusCodeEvents();
-  },[token]);
+    if(unitStatusCodes){
+      setUnitsStatusCode(unitStatusCodes)
+    }
+  },[unitStatusCodes])
+
+  useEffect(() => {
+    if(eventStatusCodes){
+      setEventStatusCode(eventStatusCodes)
+    }
+  },[eventStatusCodes]);
+
   return (
     <EventContext.Provider
       value={{

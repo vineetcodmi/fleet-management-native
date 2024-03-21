@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect} from 'react';
-import {Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapmyIndiaGL from 'mapmyindia-map-react-native-beta';
 import colors from '../../utlits/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -25,7 +25,7 @@ const MapMyIndia = ({
   isEventDetail
 }: any) => {
 
-  
+
   const { user } = useAuth();
   const mmiRef = useRef<any>(null);
   const [eventClusteredData, setEventClusteredData] = useState<any>([]);
@@ -72,7 +72,7 @@ const MapMyIndia = ({
         const existingCluster = clusteredMarkers.find(cluster => {
           return (
             getDistance(marker.coordinate, cluster.coordinate) <=
-              CLUSTER_RADIUS &&
+            CLUSTER_RADIUS &&
             cluster.coordinate[0] <= currentRegion[0] &&
             cluster.coordinate[0] >= currentRegion[2] &&
             cluster.coordinate[1] <= currentRegion[1] &&
@@ -82,13 +82,13 @@ const MapMyIndia = ({
 
         if (existingCluster) {
           // Add the marker's coordinate to the existing cluster
-          existingCluster.markers.push({cordinate: marker.coordinate, id: marker?.id});
+          existingCluster.markers.push({ cordinate: marker.coordinate, id: marker?.id });
         } else {
           // Create a new cluster for this marker
           clusteredMarkers.push({
             coordinate: marker.coordinate,
             markers: [
-              {coordinate: marker.coordinate, id: marker?.id}
+              { coordinate: marker.coordinate, id: marker?.id }
             ],
           });
         }
@@ -114,9 +114,9 @@ const MapMyIndia = ({
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c; // Distance in km
     return distance;
@@ -150,9 +150,9 @@ const MapMyIndia = ({
             <View
               style={[
                 styles.markerContentTitleBox,
-                {backgroundColor: '#1b4332'},
+                { backgroundColor: '#1b4332' },
               ]}>
-              <Text style={[styles.clusterMarkerContentTitle, {fontSize: 11}]}>{user?.beat}</Text>
+              <Text style={[styles.clusterMarkerContentTitle, { fontSize: 11 }]}>{user?.beat}</Text>
             </View>
             <Image source={require('../../assets/unitPopup.png')} />
           </View>
@@ -169,7 +169,7 @@ const MapMyIndia = ({
       <Pressable style={styles.markerWrapper} onPress={() => handleMarkerEventsClick(id)}>
         <View style={styles.clusterMarkerContent}>
           <View style={styles.markerContentTitleBox}>
-            <Text style={[styles.clusterMarkerContentTitle, {fontSize: 7.5}]}>
+            <Text style={[styles.clusterMarkerContentTitle, { fontSize: 7.5 }]}>
               {id}
             </Text>
           </View>
@@ -189,9 +189,9 @@ const MapMyIndia = ({
           <View
             style={[
               styles.markerContentTitleBox,
-              {backgroundColor: '#1b4332'},
+              { backgroundColor: '#1b4332' },
             ]}>
-            <Text style={[styles.clusterMarkerContentTitle, {fontSize: 12}]}>{id}</Text>
+            <Text style={[styles.clusterMarkerContentTitle, { fontSize: 12 }]}>{id}</Text>
           </View>
           <Image source={require('../../assets/unitPopup.png')} />
         </View>
@@ -225,7 +225,7 @@ const MapMyIndia = ({
           <View
             style={[
               styles.clusterMarkerContentTitleBox,
-              {backgroundColor: '#1b4332'},
+              { backgroundColor: '#1b4332' },
             ]}>
             <Text style={styles.clusterMarkerContentTitle}>
               {data?.markers?.length || 0}
@@ -240,156 +240,84 @@ const MapMyIndia = ({
 
   useEffect(() => {
     handleZoomChange();
-  },[mmiRef?.current])
+  }, [mmiRef?.current])
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <MapmyIndiaGL.MapView
         ref={ref => (mmiRef.current = ref)}
-        style={{flex: 1}}
-        // onPress={handleZoomChange}
+        style={{ flex: 1 }}
+      // onPress={handleZoomChange}
       >
         <MapmyIndiaGL.Camera
           zoomLevel={4}
           // minZoomLevel={4}
           // maxZoomLevel={15}
-          centerCoordinate={[78, 26]}
-          // centerCoordinate={currentLocation}
-          
+          centerCoordinate={[83.06966060423566,26.33857106608006]}
+        // centerCoordinate={currentLocation}
         />
         <MapmyIndiaGL.PointAnnotation
           key={'current-location-marker'}
           title="xyz"
           id={`current-location-marker`}
-          coordinate={[76.717873,30.704649]}
+          coordinate={[83.06966060423566,26.33857106608006]}
         >
           {createCurrentLocationIcon()}
-          </MapmyIndiaGL.PointAnnotation>
+        </MapmyIndiaGL.PointAnnotation>
 
-         {(activeTab === 'All' || activeTab === 'Events') && ( <>
+        {(activeTab === 'All' || activeTab === 'Events') && (<>
           {eventClusteredData?.map((data: any, index: number) => {
-              if (data?.markers?.length > 1) {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`eventclustermarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createEventClusterIcon(data)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              } else {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`eventsmarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data?.markers?.[0]?.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createEventIcon(data, data?.markers?.[0]?.id)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              }
-            })}
-          </>)}
-          {(activeTab === 'All' || activeTab === 'Units') && ( <>
-            {unitClusteredData?.map((data: any, index: number) => {
-              if (data?.markers?.length > 1) {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`unitclustermarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createUnitClusterIcon(data)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              } else {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    id={`eventsmarker-${index}`}
-                    title="xyz"
-                    // ref={annotationRef}
-                    coordinate={data?.markers?.[0]?.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createUnitIcon(data, data?.markers?.[0]?.id)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              }
-            })}
-          </>)}
-        {/* {eventMarker.map(
-          (Item: any) =>
-            (activeTab === 'All' || activeTab === 'Events') && (
-              <MapmyIndiaGL.PointAnnotation
-                key={Item.id}
-                title="xyz"
-                id={Item.id}
-                // ref={annotationRef}
-                coordinate={Item.coordinate}
-                onSelected={() => handleMarkerEventsClick(Item.id)}>
-                <Image
-                  source={require('../../assets/download.jpeg')}
-                  style={{height: 30, width: 30}}
-                />
-                <MapmyIndiaGL.Callout
+            if (data?.markers?.length > 1) {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
                   title="xyz"
-                  containerStyle={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 2,
-                    backgroundColor: 'red',
-                    marginBottom: 7,
-                    flexShrink: 0,
-                    alignContent: 'center',
-                  }}>
-                  <TouchableOpacity onPress={() => console.log('hellloleolo')}>
-                    <Text style={{color: 'black', textAlign: 'center'}}>3</Text>
-                  </TouchableOpacity>
-                </MapmyIndiaGL.Callout>
-              </MapmyIndiaGL.PointAnnotation>
-            ),
-        )}
-        {unitMarker.map(
-          (Item: any) =>
-            (activeTab === 'All' || activeTab === 'Units') && (
-              <MapmyIndiaGL.PointAnnotation
-                key={Item.id}
-                title="xyz"
-                id={Item.id}
-                coordinate={Item.coordinate}
-                onSelected={() => handleMarkerUnitClick(Item.id)}>
-                <Image
-                  source={require('../../assets/background.png')}
-                  style={{height: 30, width: 30}}
-                />
-                <MapmyIndiaGL.Callout
+                  id={`eventclustermarker-${index}`}
+                  coordinate={data.coordinate}
+                >
+                  {createEventClusterIcon(data)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            } else {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
                   title="xyz"
-                  containerStyle={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 2,
-                    backgroundColor: 'red',
-                    marginBottom: 7,
-                    flexShrink: 0,
-                    alignContent: 'center',
-                  }}>
-                  <TouchableOpacity onPress={() => console.log('hellloleolo')}>
-                    <Text style={{color: 'black', textAlign: 'center'}}>3</Text>
-                  </TouchableOpacity>
-                </MapmyIndiaGL.Callout>
-              </MapmyIndiaGL.PointAnnotation>
-            ),
-        )} */}
+                  id={`eventsmarker-${index}`}
+                  coordinate={data?.markers?.[0]?.coordinate}
+                >
+                  {createEventIcon(data, data?.markers?.[0]?.id)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            }
+          })}
+        </>)}
+        {(activeTab === 'All' || activeTab === 'Units') && (<>
+          {unitClusteredData?.map((data: any, index: number) => {
+            if (data?.markers?.length > 1) {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
+                  title="xyz"
+                  id={`unitclustermarker-${index}`}
+                  coordinate={data.coordinate}
+                >
+                  {createUnitClusterIcon(data)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            } else {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  id={`eventsmarker-${index}`}
+                  title="xyz"
+                  coordinate={data?.markers?.[0]?.coordinate}
+                >
+                  {createUnitIcon(data, data?.markers?.[0]?.id)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            }
+          })}
+        </>)}
       </MapmyIndiaGL.MapView>
     </View>
   );
@@ -450,7 +378,6 @@ const styles = StyleSheet.create({
     top: -30,
   },
   currentLocationWrapper: {
-    // flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',

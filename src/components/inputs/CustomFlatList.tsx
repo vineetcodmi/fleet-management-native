@@ -218,6 +218,8 @@ const FlatListData = ({ data }: any) => {
     );
   };
 
+  console.log(data, "mmj");
+
   return (
     <View>
       <FlatList

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -8,8 +8,6 @@ import {
   View,
   PermissionsAndroid, Platform
 } from 'react-native';
-import axios from 'axios';
-import {baseUrl} from '../../config';
 import colors from '../../utlits/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -23,19 +21,21 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import StatusCodesComponent from '../MapScreen/StatusCode';
 import { useEvents } from '../../context/Events';
-import {useAuth} from '../../context/Auth';
+import { useAuth } from '../../context/Auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGetAllEvent, useGetEventData } from '../../services/querries/event';
+import { useGetAllUnit, useGetUnitData } from '../../services/querries/unit';
 interface Marker {
   id: string;
   coordinate: [number, number];
 }
 
-interface EventData {}
-interface UnitData {}
+interface EventData { }
+interface UnitData { }
 
 const MapScreen = () => {
-  const {token,user} = useAuth();
-  const{unitsStatusCode}=useEvents();
+  const { token, user } = useAuth();
+  const { unitsStatusCode } = useEvents();
   const [markersEvents, setMarkersEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [markersUnit, setMarkersUnit] = useState([]);
@@ -47,89 +47,75 @@ const MapScreen = () => {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [unitData, setUnitData] = useState<UnitData | null>();
 
-  const header = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const { data: eventMonitor, isLoading: eventMonitorLoading } = useGetAllEvent();
+  const { data: unitMonitor, isLoading: unitMonitorLoading } = useGetAllUnit();
+  const { mutateAsync: getUnitData } = useGetUnitData();
+  const { mutateAsync: getEventData } = useGetEventData();
+
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
   };
   const [selectedOption, setSelectedOption] = useState('mapMyIndia');
-  const handleOptionChange = async(option: any) => {
+  const handleOptionChange = async (option: any) => {
     setSelectedOption(option);
     await AsyncStorage.setItem("map", option);
   };
 
 
-  const getUnitStatus = (unit:any) => {    
-    const currentStatus = unitsStatusCode?.filter((status:any) => status?.id === unit?.status)?.[0];
+  const getUnitStatus = (unit: any) => {
+    const currentStatus = unitsStatusCode?.filter((status: any) => status?.id === unit?.status)?.[0];
     return currentStatus;
   }
 
   useEffect(() => {
     getCurrentLocation();
-  },[]);
- const getCurrentLocation = async () => {
-  try {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'This app needs access to your location.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  }, []);
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'This app needs access to your location.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position: any) => {
+              setCurrentLocation([position.coords.latitude, position.coords.longitude]);
+            },
+            (error: any) => {
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          );
+        } else {
+          console.log('Location permission denied');
+        }
+      } else {
+        // For iOS, location permission is requested when the app is in use.
         Geolocation.getCurrentPosition(
-          (position:any) => {
+          (position: any) => {
             setCurrentLocation([position.coords.latitude, position.coords.longitude]);
           },
-          (error:any) => {
+          (error: any) => {
             console.log(error.code, error.message);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
-      } else {
-        console.log('Location permission denied');
       }
-    } else {
-      // For iOS, location permission is requested when the app is in use.
-      Geolocation.getCurrentPosition(
-        (position:any) => {
-          setCurrentLocation([position.coords.latitude, position.coords.longitude]);
-        },
-        (error:any) => {
-          console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-      );
+    } catch (err) {
+      console.warn(err);
     }
-  } catch (err) {
-    console.warn(err);
-  }
-};
-  const fetchData = async () => {
-    try {
-      const toToken = `Bearer ${token}`;
-      const [eventResponse, unitResponse] = await Promise.all([
-        axios.get(baseUrl + '/cad/api/v2/event/monitor', {
-          headers: {
-            Authorization: toToken,
-          },
-        }),
-        axios.get(baseUrl + '/cad/api/v2/unit/monitor', {
-          headers: {
-            Authorization: toToken,
-          },
-        }),
-      ]);
-      const eventResponseData = eventResponse?.data;
-      const unitResponseData = unitResponse?.data;
-      const eventMarkersData = eventResponseData.map((item: any) => {
+  };
+
+  useEffect(() => {
+    if (eventMonitor) {
+      const eventMarkersData = eventMonitor.map((item: any) => {
         const location = item?.location;
         const id = item?.agencyEventId;
         const pattern =
@@ -149,7 +135,7 @@ const MapScreen = () => {
             lngParts[1] / 60 +
             lngParts[2] / 3600
           ).toFixed(2);
-          return {id, coordinate: [parseFloat(lat), parseFloat(lng)]};
+          return { id, coordinate: [parseFloat(lat), parseFloat(lng)] };
         } else {
           return null;
         }
@@ -157,23 +143,21 @@ const MapScreen = () => {
       const filteredEventCoordinates = eventMarkersData.filter(
         (coordinate: any) => coordinate !== null,
       );
-      const unitMarkersData = unitResponseData.map((item: any) => {
+      setMarkersEvents(filteredEventCoordinates?.slice(0, 10));
+    }
+  }, [eventMonitor]);
+
+  useEffect(() => {
+    if (unitMonitor) {
+      const unitMarkersData = unitMonitor.map((item: any) => {
         const lng = item?.latitude;
         const lat = item?.longitude;
         const id = item?.unitId;
-        return {id: id, coordinate: [parseFloat(lat), parseFloat(lng)]};
+        return { id: id, coordinate: [parseFloat(lat), parseFloat(lng)] };
       });
-      setMarkersEvents(filteredEventCoordinates?.slice(0, 10));
       setMarkersUnit(unitMarkersData?.slice(0, 10));
-      setLoading(false);
-    } catch (error) {
-      console.log('Error fetching data:', error);
-      setLoading(false);
     }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  }, [unitMonitor]);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -187,16 +171,12 @@ const MapScreen = () => {
   };
 
   const handleMarkerEventsClick = async (id: string) => {
+    console.log(id,"kk");
+    
     try {
-      const toToken = `Bearer ${token}`;
-      axios
-        .get(baseUrl + `/cad/api/v2/event/${id}`, {
-          headers: {
-            Authorization: toToken,
-          },
-        })
+      await getEventData(id)
         .then(res => {
-          setEventData(res.data);
+          setEventData(res);
           setModalVisible(true);
         });
     } catch (error) {
@@ -205,16 +185,11 @@ const MapScreen = () => {
     }
   };
   const handleMarkerUnitClick = async (id: string) => {
+    console.log(id,"mm");
     try {
-      const toToken = `Bearer ${token}`;
-      axios
-        .get(baseUrl + `/cad/api/v2/unit/${id}`, {
-          headers: {
-            Authorization: toToken,
-          },
-        })
+      await getUnitData(id)
         .then(res => {
-          setUnitData(res.data);
+          setUnitData(res);
           setUnitModalVisible(true);
         });
     } catch (error) {
@@ -224,13 +199,13 @@ const MapScreen = () => {
   };
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{flex: 0.9}}>
-        {loading ? (
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 0.9 }}>
+        {eventMonitorLoading && unitMonitorLoading ? (
           <ActivityIndicator
             size="large"
             color={colors.black}
-            style={{alignContent: 'center'}}
+            style={{ alignContent: 'center' }}
           />
         ) : selectedOption === 'mapMyIndia' ? (
           <MapMyIndia
@@ -326,7 +301,7 @@ const MapScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={{flexDirection: 'row', gap: 8}}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity style={styles.Icon}>
               <AntDesign name="filter" size={22} color="#00526F" />
             </TouchableOpacity>
@@ -344,7 +319,7 @@ const MapScreen = () => {
             marginLeft: 2,
           }}>
           <TouchableOpacity onPress={() => handleOptionChange('mapMyIndia')}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   width: 20,
@@ -366,7 +341,7 @@ const MapScreen = () => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleOptionChange('mapbox')}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   width: 20,
@@ -408,8 +383,8 @@ const MapScreen = () => {
         transparent={true}
         visible={modalVisibleStatusCode}
         onRequestClose={closeUnitModal}
-       >
-        <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={unitsStatusCode}/>
+      >
+        <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={unitsStatusCode} />
       </Modal>
       <View
         style={{
@@ -443,14 +418,14 @@ const MapScreen = () => {
               color={colors.white}
             />
           </View>
-          <Text style={{color: colors.grayTextColor,marginHorizontal:20}}>{getUnitStatus(user)?.description}</Text>
+          <Text style={{ color: colors.grayTextColor, marginHorizontal: 20 }}>{getUnitStatus(user)?.description}</Text>
           <SimpleLineIcons
             name="refresh"
             size={20}
             color={colors.grayBorderColor}
           />
-          <TouchableOpacity 
-           onPress={()=>setModalVisibleStatusCode(true)}
+          <TouchableOpacity
+            onPress={() => setModalVisibleStatusCode(true)}
             style={{
               height: 35,
               width: 35,
@@ -460,8 +435,8 @@ const MapScreen = () => {
               borderWidth: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              marginHorizontal:20,
-              
+              marginHorizontal: 20,
+
             }}>
             <MaterialIcons
               name="keyboard-arrow-down"
@@ -480,8 +455,8 @@ const MapScreen = () => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'center'}}>
-              <Text style={{color: colors.grayTextColor,fontSize:12,marginLeft:20}}>{user?.beat}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: colors.grayTextColor, fontSize: 12, marginLeft: 20 }}>{user?.beat}</Text>
               <MaterialIcons
                 name="keyboard-arrow-right"
                 size={30}

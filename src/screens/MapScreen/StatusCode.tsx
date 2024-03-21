@@ -11,8 +11,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../utlits/colors';
 import {useAuth} from '../../context/Auth';
-import axios from 'axios';
-import {baseUrl} from '../../config';
+import { useUpdateUnitStatus } from '../../services/querries/unit';
 
 interface statuscode {
   id: number;
@@ -36,24 +35,10 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
   // const [statusCodeData, setStatusCodeData] = useState<statuscode[]>([]);
   const [updateStatus, setUpdateStatus] = useState<statuscode[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null); // State to track selected item ID
-  const { user, token } = useAuth();
-  const header = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const { user } = useAuth();
   const statusToUpdate = [0, 1, 2, 3, 4, 5, 6];
 
-  const statuscode = async (data: any) => {
-    try {
-      const response = await axios.post(baseUrl + `/cad/api/v2/unit/status`, data, header);
-      console.log(response.data, 'dattatat');
-      return response.data;
-    } catch (err) {
-      console.log(err, 'my errorr');
-      throw err;
-    }
-  };
+  const { mutateAsync: updateUnitStatus } = useUpdateUnitStatus();
 
   const handleUpdateUnitStatus = async (item: statuscode) => {
     const data = {
@@ -61,7 +46,7 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
       status: item.id,
     };
     try {
-      await statuscode(data);
+      await updateUnitStatus(data);
       setSelectedItemId(item.id);
       Alert.alert('Status updated successfully');
     } catch (err) {

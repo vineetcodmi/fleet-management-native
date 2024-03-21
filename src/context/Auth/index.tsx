@@ -24,13 +24,12 @@ type Event = any;
 interface AuthContextType {
   user: User;
   login: (username: string, password: string) => Promise<String | undefined>;
-  logout: () => void;
+  logout: (data : { unitId: string }) => void;
   getUser: (userId: string) => void;
   events: (id: string) => void;
   token: string | null;
   setAuthToken: (token: string) => void;
   setUnitIdToStorage: (unitId: string) => void;
-  deleteAccount: (data: { unitId: string; comment: string }) => void;
   eventData: Event;
   unitId: string | null;
 }
@@ -44,7 +43,6 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   setAuthToken: () => {},
   setUnitIdToStorage: () => {},
-  deleteAccount: () => {},
   unitId: null,
   eventData: undefined,
 });
@@ -55,26 +53,18 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: FC<AuthProviderProps> = ({ children,navigation }:any) => {
   const [user, setUser] = useState<User>();
   const [token, setToken] = useState<string | null>(null);
   const [unitId, setUnitId] = useState<string | null>(null);
   const [eventData, setEventData] = useState<Event>();
 
-  const header = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
   const getUser = async (unitId: string) => {
     setUnitIdToStorage(unitId)
     try {
       const toToken = `Bearer ${token}`;
-      console.log(toToken, "to toknenenne");
-
       axios
-        .get(baseUrl + `/cad/api/v2/unit/logon`, {
+        .get(baseUrl + `/unit/logon`, {
           headers: {
             Authorization: toToken,
           },
@@ -84,7 +74,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         })
         .then((response) => {
           setUser(response.data);
-          console.log(response.data, "unitid");
         })
         .catch((error) => {
           console.log(error, "Error fetching user data");
@@ -130,21 +119,35 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    events();
-    if (token && unitId) { 
-      getUser(unitId);
+    const token = async() => {
+      const newToken = await AsyncStorage.getItem("token");
+      setToken(newToken);
+    };
+    token();
+  },[AsyncStorage.getItem("token")]);
+
+
+  useEffect(() => {
+    if (token) { 
+      events();
+      unitId && getUser(unitId);
     }
   }, [unitId, token]);
 
   const login = async (username: string, password: string) => {
     try {
       return axios
-        .post(baseUrl + `/cad/api/v2/token`, {
+        .post(baseUrl + `/token`, {
           username,
           password,
         })
-        .then((res) => {
+        .then(async(res) => {
           const token = res.data;
+          const userData = {
+            username: username,
+            field: password
+          }
+          await AsyncStorage.setItem("loggedUser", JSON.stringify(userData))
           setAuthToken(token);
           if (unitId) {
             getUser(unitId);
@@ -170,34 +173,31 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await AsyncStorage.removeItem("token");
-      // await AsyncStorage.removeItem("unitId");
-      setToken(null);
-      setUnitId(null);
-      setUser(undefined);
-      // setEventData(undefined);
-    } catch (error) {
-      console.error("Error removing token from AsyncStorage:", error);
-    }
-  };
-  const deleteAccount = async (data: { unitId: string; comment: string }) => {
+  const logout = async (data: { unitId: string }) => {
+    const header = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     axios
-      .post(baseUrl + "/cad/api/v2/unit/logoff", data, header)
-      .then((res) => {
-        logout();
+      .post(baseUrl + "/unit/logoff", data, header)
+      .then(async(res) => {
+        await AsyncStorage.removeItem("token");
+        setToken(null);
+        setUnitId(null);
+        setUser(undefined);
       })
       .catch((err) => {
         console.log(err, "my errorr");
       });
   };
+
   const events = async () => {
-    console.log(token, "tokennen");
     const toToken = `Bearer ${token}`;
     try {
       await axios
-        .get(baseUrl + "/cad/api/v2/event/monitor", {
+        .get(baseUrl + "/event/monitor", {
           headers: {
             Authorization: toToken,
           },
@@ -219,7 +219,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         token,
         getUser,
         setAuthToken,
-        deleteAccount,
         unitId,
         setUnitIdToStorage,
         events,

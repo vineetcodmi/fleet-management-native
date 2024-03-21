@@ -3,37 +3,22 @@ import FlatListData from '../../components/inputs/CustomFlatList';
 import {ScrollView, StyleSheet, Text} from 'react-native';
 import colors from '../../utlits/colors';
 import { useAuth } from '../../context/Auth';
-import { baseUrl } from '../../config';
-import axios from 'axios';
+import { useGetEvent } from '../../services/querries/event';
 
 const Report = ({dispatchEvents}: any) => {
-  const{ user, token }=useAuth();
-
-  console.log(user,"usrer");
-  
+  const{ user }=useAuth();
   const [currentAssignedEvent, setCurrentAssignedEvent] = useState<any>();
 
-  useEffect(()=>{
-    if(user){
-      const id =user.assignedAgencyEventId || "C01122300001";
-      const toToken = `Bearer ${token}`;
-       try {
-          axios.get(baseUrl +`/cad/api/v2/event/${id}`, {
-          headers: {
-            Authorization: toToken,
-          },
-        }).then(((res:any)=>{
-          setCurrentAssignedEvent([res?.data])
-          console.log(res.data,"res datata");
-          
-      })) 
-      } catch(error) {
-        console.log('error eventsss', error);
-      }
-    }
-  },[user])
+  const {data: event, refetch: refetchEvent} = useGetEvent(user?.assignedAgencyEventId || "C01122300001");
 
-  
+  useEffect(()=>{
+    if(event){
+      setCurrentAssignedEvent([event])
+    }
+  },[event])
+
+  console.log(currentAssignedEvent, "kk");
+
  
   return (
     <ScrollView style={{marginBottom:120}}>

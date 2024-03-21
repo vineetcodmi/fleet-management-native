@@ -25,8 +25,8 @@ import { useAuth } from "../../context/Auth";
 import Geolocation from "@react-native-community/geolocation";
 import MapBox from "../MapScreen/MapBox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { baseUrl } from "../../config";
+import { useAddComment, useGetEvent } from "../../services/querries/event";
+import { AxiosResponse } from "axios";
 
 interface Event {
   comments: string;
@@ -42,7 +42,7 @@ const General = ({ data }: any) => {
   const [markersEvents, setMarkersEvents] = useState<any>([]);
   const [comment, setComment] = useState("");
   const [selectedMap, setSelectedMap] = useState<string>("mapMyIndia");
-  const [eventData, setEventData] = useState<Event>();
+  const [eventData, setEventData] = useState<Event | AxiosResponse>();
   const [loading, setLoading] = useState(false);
   const[isComment,setIscomment]=useState<boolean>();
   // const { latDiff, lngDiff } = extractLatLongDiff(location);
@@ -51,11 +51,9 @@ const General = ({ data }: any) => {
     { label: "Case 2", value: "case2" },
     { label: "Case 3", value: "case3" },
   ]);
-  const header = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+
+  const {data: event, isLoading: eventLoading, refetch: refetchEvent} = useGetEvent(data?.agencyEventId);
+  const { mutateAsync: addComments } = useAddComment();
 
   useEffect(() => {
     fetchMap();
@@ -166,38 +164,19 @@ const General = ({ data }: any) => {
   };
 
   useEffect(() => {
-    Events();
-  }, []);
-
-  const Events = async () => {
-    const id = data.agencyEventId;
-    try {
-      const toToken = `Bearer ${token}`;
-      axios
-        .get(baseUrl + `/cad/api/v2/event/${id}`, {
-          headers: {
-            Authorization: toToken,
-          },
-        })
-        .then((res) => {
-          setEventData(res.data);
-        });
-    } catch (error) {
-      console.log(error, "error");
+    if(event){
+      setEventData(event)
     }
-  };
+  }, [event]);
+
   const handleSubmit = async () => {
     const id = data.agencyEventId;
+    const formData = {
+      remark: comment
+    }
     try {
       setLoading(true);
-      await axios
-        .post(
-          baseUrl + `/cad/api/v2/event/${id}/comment`,
-          {
-            remark: comment,
-          },
-          header
-        )
+      await addComments({id: id, data: formData})
         .then((res) => {
           setOpenCommentModal(false);
           setIscomment(!isComment)
