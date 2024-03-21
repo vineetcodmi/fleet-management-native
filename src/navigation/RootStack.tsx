@@ -63,6 +63,8 @@ const RootStack = () => {
   });
 
   const saveDevice = async (device: any) => {
+    console.log(device,"devicee");
+    
     try {
       const header = {
         headers: {
@@ -74,6 +76,8 @@ const RootStack = () => {
         device,
         header
       );
+      console.log(response,"responseeee");
+      
       return response;
     } catch (error) {
       console.error("Error saving device:", error);

@@ -8,7 +8,7 @@ const SplashScreen = ({navigation}: any) => {
   }, []);
   return (
     <View style={styles.container}>
-      <Text style={{fontWeight:'bold',fontSize:40}}> 
+      <Text style={{fontWeight:'bold',fontSize:20}}> 
 
       IntergraphMobileResponder-I
         </Text>

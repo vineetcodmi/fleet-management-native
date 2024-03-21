@@ -855,7 +855,7 @@ const General = ({ data }: any) => {
                 marginHorizontal: 12,
                 backgroundColor: "#00526F",
                 justifyContent: "center",
-                marginBottom: 10,
+                marginBottom: 40,
               }}
             >
               <Text style={styles.buttonText}>Submit</Text>

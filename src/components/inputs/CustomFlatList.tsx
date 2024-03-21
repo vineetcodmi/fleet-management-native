@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import {
   View,
   Text,
@@ -161,8 +161,7 @@ const FlatListData = ({ data }: any) => {
           <View style={styles.callerContainer}>
             <View>
               <Text style={{ color: colors.textBlueColor }}>
-                {/* 7989898989 */}
-                {item?.callData?.callerName}
+                7989898989
               </Text>
               <Text style={{ color: "#344054" }}>Caller Number</Text>
             </View>
