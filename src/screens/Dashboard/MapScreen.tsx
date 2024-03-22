@@ -25,6 +25,8 @@ import StatusCodesComponent from '../MapScreen/StatusCode';
 import { useEvents } from '../../context/Events';
 import {useAuth} from '../../context/Auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { STATUS_CODE_COLOR, STATUS_CODE_ICON } from '../../constant/statusCodeConstant';
+import { Image } from 'react-native';
 interface Marker {
   id: string;
   coordinate: [number, number];
@@ -134,7 +136,7 @@ const MapScreen = () => {
         const id = item?.agencyEventId;
         const pattern =
           /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
-        const match = location.match(pattern);
+        const match = location?.match(pattern);
         if (match) {
           const [latString, lngString] = match.slice(1);
           const latParts = latString.split(':').map(parseFloat);
@@ -434,14 +436,10 @@ const MapScreen = () => {
               alignItems: 'center',
               height: 35,
               width: 35,
-              backgroundColor: 'green',
+              backgroundColor: STATUS_CODE_COLOR?.[user?.status || 0],
               borderRadius: 3,
             }}>
-            <MaterialCommunityIcons
-              name="car-outline"
-              size={20}
-              color={colors.white}
-            />
+            <Image source={STATUS_CODE_ICON?.[user?.status || 0]} />
           </View>
           <Text style={{color: colors.grayTextColor,marginHorizontal:20}}>{getUnitStatus(user)?.description}</Text>
           <SimpleLineIcons

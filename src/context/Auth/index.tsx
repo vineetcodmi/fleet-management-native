@@ -15,7 +15,9 @@ type User =
       assignedAgencyEventId: string;
       status: number;
       beat:string;
-      desciption:string
+      desciption:string;
+      latitude: number;
+      longitude: number;
     }
   | undefined;
 
@@ -23,9 +25,9 @@ type Event = any;
 
 interface AuthContextType {
   user: User;
-  login: (username: string, password: string) => Promise<String | undefined>;
+  login: (username: string, password: string, unitId: string) => Promise<String | undefined>;
   logout: () => void;
-  getUser: (userId: string) => void;
+  getUser: (userId: any, token:any) => void;
   events: (id: string) => void;
   token: string | null;
   setAuthToken: (token: string) => void;
@@ -67,24 +69,24 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     },
   };
 
-  const getUser = async (unitId: string) => {
+  const getUser = async (unitId: any, token: any) => {
+    console.log(unitId, token, baseUrl + `/cad/api/v2/unit/logon`, "unitId");
+    
     setUnitIdToStorage(unitId)
     try {
-      const toToken = `Bearer ${token}`;
-      console.log(toToken, "to toknenenne");
-
+      const header = {
+        headers:{
+          Authorization: `Bearer ${token}`,
+        }
+      }
+      const data  = {
+        unitId: unitId
+      }
       axios
-        .get(baseUrl + `/cad/api/v2/unit/logon`, {
-          headers: {
-            Authorization: toToken,
-          },
-          params: {
-            unitId: unitId,
-          },
-        })
+        .post(baseUrl + `/cad/api/v2/unit/logon`, data, header)
         .then((response) => {
           setUser(response.data);
-          console.log(response.data, "unitid");
+          console.log(response.data, "data  ===>");
         })
         .catch((error) => {
           console.log(error, "Error fetching user data");
@@ -99,7 +101,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       await AsyncStorage.setItem("unitId", unitId);
       setUnitId(unitId);
     } catch (error) {
-      console.error("Error storing unitId in AsyncStorage:", error);
+      // console.error("Error storing unitId in AsyncStorage:", error);
     }
   };
 
@@ -110,49 +112,81 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         setUnitId(storedUnitId);
       }
     } catch (error) {
-      console.error("Error retrieving unitId from AsyncStorage:", error);
+      // console.error("Error retrieving unitId from AsyncStorage:", error);
     }
   };
   const fetchToken = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem("token");
-      if (storedToken) {
-        setToken(storedToken);
+      if(token){
+        const storedUser = await AsyncStorage.getItem("loggedUserInfo");
+        if(storedUser){
+          const userData = JSON.parse(storedUser || "");
+          console.log(userData, "kk");
+          await axios
+            .post(baseUrl + `/cad/api/v2/token`, {
+              username: userData?.username,
+              password: userData?.field,
+            })
+            .then(async(res) => {
+              const token = res.data;
+              setAuthToken(token);
+              setToken(token);
+              return token;
+            });
+        }
       }
     } catch (error) {
-      console.error("Error retrieving token from AsyncStorage:", error);
+      // console.error("Error retrieving token from AsyncStorage:", error);
     }
   };
 
   useEffect(() => {
     fetchToken();
+    const interval = setInterval(fetchToken, 60000); // Fetch token every minute (60 * 1000 milliseconds)
+
+    // Cleanup function to clear the interval when component unmounts
+    return () => clearInterval(interval);
+  }, []);
+
+
+  useEffect(() => {
+    // fetchToken();
     fetchUnitId();
   }, []);
 
+  // console.log(unitId, "kk");
+  
+
   useEffect(() => {
-    events();
-    if (token && unitId) { 
-      getUser(unitId);
+    if (token) { 
+      events();
+      // unitId && getUser(unitId);
     }
   }, [unitId, token]);
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string, unitId: string) => {
+    console.log("in token creation");
+    
     try {
       return axios
         .post(baseUrl + `/cad/api/v2/token`, {
           username,
           password,
         })
-        .then((res) => {
+        .then(async(res) => {
           const token = res.data;
           setAuthToken(token);
-          if (unitId) {
-            getUser(unitId);
-          }
+          const userInfo = JSON.stringify({
+            username: username,
+            field: password
+          });
+          await AsyncStorage.setItem("loggedUserInfo", userInfo);
+          setToken(token);
+          getUser(unitId, token);
           return token;
         });
     } catch (error) {
-      console.error("Error logging in:", error);
+      // console.error("Error logging in:", error);
       return undefined;
     }
   };
@@ -163,37 +197,47 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         await AsyncStorage.setItem("token", token);
         setToken(token);
       } catch (error) {
-        console.error("Error storing token in AsyncStorage:", error);
+        // console.error("Error storing token in AsyncStorage:", error);
       }
     } else {
-      console.error("Token value is null or undefined");
+      // console.error("Token value is null or undefined");
     }
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem("token");
-      // await AsyncStorage.removeItem("unitId");
-      setToken(null);
-      setUnitId(null);
-      setUser(undefined);
+      axios
+      .post(baseUrl + "/cad/api/v2/unit/logoff", {unitId: unitId}, header)
+      .then(async(res) => {
+        console.log("Logged Off");
+        
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("loggedUserInfo")
+        // await AsyncStorage.removeItem("unitId");
+        setToken(null);
+        setUnitId(null);
+        setUser(undefined);
+      })
+      .catch((err) => {
+        // console.log(err, "my errorr");
+      });
+
       // setEventData(undefined);
     } catch (error) {
-      console.error("Error removing token from AsyncStorage:", error);
+      // console.error("Error removing token from AsyncStorage:", error);
     }
   };
   const deleteAccount = async (data: { unitId: string; comment: string }) => {
-    axios
-      .post(baseUrl + "/cad/api/v2/unit/logoff", data, header)
-      .then((res) => {
-        logout();
-      })
-      .catch((err) => {
-        console.log(err, "my errorr");
-      });
+    // axios
+    //   .post(baseUrl + "/cad/api/v2/unit/logoff", data, header)
+    //   .then((res) => {
+    //     logout();
+    //   })
+    //   .catch((err) => {
+    //     console.log(err, "my errorr");
+    //   });
   };
   const events = async () => {
-    console.log(token, "tokennen");
     const toToken = `Bearer ${token}`;
     try {
       await axios
@@ -206,7 +250,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
           setEventData(res.data);
         });
     } catch (error) {
-      console.log("error eventsss", error);
+      // console.log("error eventsss", error);
     }
   };
 

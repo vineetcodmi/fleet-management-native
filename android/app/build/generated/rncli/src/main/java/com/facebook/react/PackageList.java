@@ -17,6 +17,8 @@ import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.reactnativecommunity.geolocation.GeolocationPackage;
 // @react-native-community/masked-view
 import org.reactnative.maskedview.RNCMaskedViewPackage;
+// @react-native-picker/picker
+import com.reactnativecommunity.picker.RNCPickerPackage;
 // @rnmapbox/maps
 import com.rnmapbox.rnmbx.RNMBXPackage;
 // mapmyindia-map-react-native-beta
@@ -92,6 +94,7 @@ public class PackageList {
       new AsyncStoragePackage(),
       new GeolocationPackage(),
       new RNCMaskedViewPackage(),
+      new RNCPickerPackage(),
       new RNMBXPackage(),
       new RCTMGLPackage(),
       new RNCameraPackage(),

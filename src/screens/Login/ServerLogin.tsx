@@ -39,12 +39,13 @@ const ServerLogin = ({ route, navigation }: any) => {
     }
   }, [token]);
 
-  const handleServerProduction = () => {
+  const handleServerProduction = (values:any) => {
     try {
       setLoading(true);
       const toToken = `Bearer${token}`;
+      const server = values?.production;
       axios
-        .get(baseUrl + "/cad/", {
+        .get(server, {
           headers: {
             Authorization: toToken,
           },
@@ -69,23 +70,23 @@ const ServerLogin = ({ route, navigation }: any) => {
     navigation.navigate("QrScanner", { serverKey: "education" });
   };
   const validationSchema = Yup.object().shape({
-    production: Yup.string()
-      .matches(
-        /^https:\/\/.*/,
-        'Production server URL must start with "https://"'
-      )
-      .required("Production server URL is required"),
-    education: Yup.string()
-      .matches(
-        /^https:\/\/.*/,
-        'Education server URL must start with "https://"'
-      )
-      .required("Education server URL is required"),
+    production: Yup.string().url(),
+      // .matches(
+      //   /^https:\/\/.*/,
+      //   'Production server URL must start with "https://"'
+      // )
+      // .required("Production server URL is required"),
+    education: Yup.string().url(),
+      // .matches(
+      //   /^https:\/\/.*/,
+      //   'Education server URL must start with "https://"'
+      // )
+      // .required("Education server URL is required"),
   });
 
   const initialValues = {
-    production: "https://",
-    education: "https://",
+    production: "",
+    education: "",
   };
 
   return (

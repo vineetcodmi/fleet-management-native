@@ -49,9 +49,9 @@ export const EventsProvider: FC<EventsProviderProps> = ({ children }) => {
         header
       );
       setUnitsStatusCode(response.data);
-      console.log(response.data,"datatta of codesss");
+      // console.log(response.data,"datatta of codesss");
     } catch (err) {
-      console.log(err, "my errorr");
+      // console.log(err, "my errorr");
     }
   };
 
@@ -63,7 +63,7 @@ export const EventsProvider: FC<EventsProviderProps> = ({ children }) => {
       );
       setEventStatusCode(response.data)
       }catch (err) {
-        console.log(err, "my errorr");
+        // console.log(err, "my errorr");
       }
   }
 

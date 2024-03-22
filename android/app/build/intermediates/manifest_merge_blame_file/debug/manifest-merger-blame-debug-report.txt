@@ -9,31 +9,31 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:5-67
-11-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:22-64
+11-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:5-67
+11-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:3:22-64
 12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-12-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:5-79
-12-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:22-76
+12-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:5-79
+12-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:4:22-76
 13    <uses-permission android:name="android.permission.CAMERA" />
-13-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:5-65
-13-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:22-62
+13-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:5-65
+13-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:7:22-62
 14
 15    <uses-feature
-15-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:9:5-11:36
+15-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:9:5-11:36
 16        android:name="android.hardware.camera"
-16-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:10:9-47
+16-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:10:9-47
 17        android:required="false" />
-17-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:11:9-33
+17-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:11:9-33
 18    <uses-feature
-18-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:12:5-14:36
+18-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:12:5-14:36
 19        android:name="android.hardware.camera.autofocus"
-19-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:13:9-57
+19-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:13:9-57
 20        android:required="false" />
-20-->[:react-native-camera] /Users/apple/Documents/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:14:9-33
+20-->[:react-native-camera] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-camera/android/build/intermediates/merged_manifest/generalDebug/AndroidManifest.xml:14:9-33
 21
 22    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-22-->[:rnmapbox_maps] /Users/apple/Documents/fleet-management-native/node_modules/@rnmapbox/maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:5-81
-22-->[:rnmapbox_maps] /Users/apple/Documents/fleet-management-native/node_modules/@rnmapbox/maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:22-78
+22-->[:rnmapbox_maps] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/@rnmapbox/maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:5-81
+22-->[:rnmapbox_maps] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/@rnmapbox/maps/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:22-78
 23    <!--
 24    This manifest file is used only by Gradle to configure debug-only capabilities
 25    for React Native Apps.
@@ -158,67 +158,67 @@
 78-->[androidx.core:core:1.9.0] /Users/apple/.gradle/caches/transforms-3/22683146be7de19e680288086dc84be1/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
 79
 80    <application
-80-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:7:5-26:19
+80-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:7:5-26:19
 81        android:name="com.fleet.MainApplication"
-81-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:8:7-38
+81-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:8:7-38
 82        android:allowBackup="false"
-82-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:12:7-34
+82-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:12:7-34
 83        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 83-->[androidx.core:core:1.9.0] /Users/apple/.gradle/caches/transforms-3/22683146be7de19e680288086dc84be1/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
 84        android:debuggable="true"
 85        android:extractNativeLibs="true"
 86        android:icon="@mipmap/ic_launcher"
-86-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:10:7-41
+86-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:10:7-41
 87        android:label="@string/app_name"
-87-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:9:7-39
+87-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:9:7-39
 88        android:roundIcon="@mipmap/ic_launcher_round"
-88-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:11:7-52
+88-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:11:7-52
 89        android:theme="@style/AppTheme"
-89-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:13:7-38
+89-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:13:7-38
 90        android:usesCleartextTraffic="true" >
-90-->/Users/apple/Documents/fleet-management-native/android/app/src/debug/AndroidManifest.xml:6:9-44
+90-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/debug/AndroidManifest.xml:6:9-44
 91        <activity
-91-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:14:7-25:18
+91-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:14:7-25:18
 92            android:name="com.fleet.MainActivity"
-92-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:15:9-37
+92-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:15:9-37
 93            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-93-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:17:9-118
+93-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:17:9-118
 94            android:exported="true"
-94-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:20:9-32
+94-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:20:9-32
 95            android:label="@string/app_name"
-95-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:16:9-41
+95-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:16:9-41
 96            android:launchMode="singleTask"
-96-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:18:9-40
+96-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:18:9-40
 97            android:windowSoftInputMode="adjustResize" >
-97-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:19:9-51
+97-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:19:9-51
 98            <intent-filter>
-98-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:21:9-24:25
+98-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:21:9-24:25
 99                <action android:name="android.intent.action.MAIN" />
-99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:13-65
-99-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:21-62
+99-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:13-65
+99-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:22:21-62
 100
 101                <category android:name="android.intent.category.LAUNCHER" />
-101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:13-73
-101-->/Users/apple/Documents/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:23-70
+101-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:13-73
+101-->/Users/apple/Documents/fleet-management/fleet-management-native/android/app/src/main/AndroidManifest.xml:23:23-70
 102            </intent-filter>
 103        </activity>
 104
 105        <provider
-105-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-16:20
+105-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-16:20
 106            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
-106-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-83
+106-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-83
 107            android:authorities="com.fleet.fileprovider"
-107-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-64
+107-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-64
 108            android:exported="false"
-108-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-37
+108-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-37
 109            android:grantUriPermissions="true" >
-109-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-47
+109-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-47
 110            <meta-data
-110-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:63
+110-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:63
 111                android:name="android.support.FILE_PROVIDER_PATHS"
-111-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
+111-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
 112                android:resource="@xml/file_provider_paths" />
-112-->[:react-native-webview] /Users/apple/Documents/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-60
+112-->[:react-native-webview] /Users/apple/Documents/fleet-management/fleet-management-native/node_modules/react-native-webview/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-60
 113        </provider>
 114
 115        <activity

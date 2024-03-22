@@ -14,7 +14,7 @@ const EventsDetails = ({closeModal, data}: any) => {
     console.log(data?.callData?.callerPhoneNumber,"numberrere");
     
     const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
-    const match = data?.location.match(pattern);
+    const match = data?.location?.match(pattern);
     if (match) {
       const [latString, lngString] = match.slice(1);
       const latParts = latString.split(':').map(parseFloat);

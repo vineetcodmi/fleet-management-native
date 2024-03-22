@@ -1,7 +1,15 @@
 [
     {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
         "merged": "com.fleet.app-merged_res-61:/mipmap-xxhdpi_ic_launcher_round.png.flat",
         "source": "com.fleet.app-main-63:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-hdpi/ic_launcher.png"
     },
     {
         "merged": "com.fleet.app-merged_res-61:/mipmap-xxhdpi_ic_launcher.png.flat",
@@ -12,12 +20,28 @@
         "source": "com.fleet.app-main-63:/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
         "merged": "com.fleet.app-merged_res-61:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
         "source": "com.fleet.app-main-63:/mipmap-xxxhdpi/ic_launcher_round.png"
     },
     {
-        "merged": "com.fleet.app-merged_res-61:/raw_notification_sound.wav.flat",
-        "source": "com.fleet.app-main-63:/raw/notification_sound.wav"
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xhdpi/ic_launcher_round.png"
     },
     {
         "merged": "com.fleet.app-merged_res-61:/mipmap-mdpi_ic_launcher.png.flat",
@@ -28,8 +52,12 @@
         "source": "com.fleet.app-main-63:/mipmap-hdpi/ic_launcher_round.png"
     },
     {
-        "merged": "com.fleet.app-merged_res-61:/drawable_rn_edit_text_material.xml.flat",
-        "source": "com.fleet.app-main-63:/drawable/rn_edit_text_material.xml"
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/raw_notification_sound.wav.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/raw/notification_sound.wav"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/drawable_rn_edit_text_material.xml.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/drawable/rn_edit_text_material.xml"
     },
     {
         "merged": "com.fleet.app-merged_res-61:/mipmap-xhdpi_ic_launcher.png.flat",
@@ -44,7 +72,19 @@
         "source": "com.fleet.app-main-63:/mipmap-mdpi/ic_launcher_round.png"
     },
     {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
         "merged": "com.fleet.app-merged_res-61:/mipmap-xhdpi_ic_launcher_round.png.flat",
         "source": "com.fleet.app-main-63:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-merged_res-61:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/Users/apple/.gradle/daemon/8.3/com.fleet.app-main-63:/mipmap-xxhdpi/ic_launcher.png"
     }
 ]

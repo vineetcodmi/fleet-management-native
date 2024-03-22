@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { TabController } from "react-native-ui-lib";
 import colors from "../../utlits/colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import General from "../Notification/General";
+import StatusBar from "../../components/EventDetails/StatusBar/StatusBar";
+import { useAuth } from "../../context/Auth";
+import { useEvents } from "../../context/Events";
 
 const UnitsTabContent = () => <Text>Content of Units Tab</Text>;
 
 const Event = ({ navigation, route }: any) => {
+  const { user, token, getUser } = useAuth();
+  const {unitsStatusCode } = useEvents();
   const data = route.params?.item;
+  const isDispatch = route.params?.isDispatch;
+
+  console.log(user, "user");
+  
+
+  useEffect(() => {
+    if(user){
+      getUser(user?.unitId, token);
+    }
+  },[])
 
   return (
     <View style={{ flex: 1 }}>
@@ -50,6 +65,7 @@ const Event = ({ navigation, route }: any) => {
           </View>
         </View>
       </View>
+      {isDispatch && <StatusBar unit={user} event={data} unitsStatusCode={unitsStatusCode}/>}
       <TabController
       
         items={[

@@ -18,6 +18,7 @@ import * as Yup from "yup";
 import { useAuth } from "../../context/Auth";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { OneSignal } from "react-native-onesignal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const productionData = route.params;
@@ -34,9 +35,9 @@ const LoginScreen = ({ navigation, route }: any) => {
       const userId = values?.userId;
       const password = values?.password;
       const unitId = values?.unitId;
-      const token = await login(userId, password);
+      const token = await login(userId, password, unitId);
       if (token) {
-        getUser(unitId);
+        // getUser(unitId);
         navigation.replace("BottomNavigation");
       } else {
         console.error("Login failed: Invalid credentials");
@@ -50,6 +51,15 @@ const LoginScreen = ({ navigation, route }: any) => {
     }
   };
 
+  useEffect(() => {
+    const remove = async() => {
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("unitId");
+    }
+    remove();
+  },[])
+
   const toggleRememberMe = () => {
     setRememberMe(!rememberMe);
   };
@@ -59,12 +69,9 @@ const LoginScreen = ({ navigation, route }: any) => {
   };
 
   const initialValues = {
-    userId: "wgc",
-    unitId: "ABN1661",
-    password: "112",
-    // userId: 'wgc',
-    // unitId: 'ABN1661',
-    // password: '112',
+    userId: "",
+    unitId: "",
+    password: "",
   };
 
   const validationSchema = Yup.object().shape({

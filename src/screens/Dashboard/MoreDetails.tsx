@@ -8,9 +8,7 @@ const Deatils=({navigation}:any)=>{
   const{logout,token}=useAuth()
   const handlelogout=()=>{
     logout();
-    if(!token){
-      navigation.replace('LoginScreen');
-    }
+    navigation.replace('LoginScreen');
   }
   return(
     <View style={{flex:1,marginTop:30}}>

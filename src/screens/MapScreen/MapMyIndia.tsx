@@ -152,7 +152,7 @@ const MapMyIndia = ({
                 styles.markerContentTitleBox,
                 {backgroundColor: '#1b4332'},
               ]}>
-              <Text style={[styles.clusterMarkerContentTitle, {fontSize: 11}]}>{user?.beat}</Text>
+              <Text style={[styles.clusterMarkerContentTitle, {fontSize: 11}]}>{user?.unitId}</Text>
             </View>
             <Image source={require('../../assets/unitPopup.png')} />
           </View>
@@ -250,18 +250,17 @@ const MapMyIndia = ({
         // onPress={handleZoomChange}
       >
         <MapmyIndiaGL.Camera
-          zoomLevel={4}
+          zoomLevel={11}
           // minZoomLevel={4}
           // maxZoomLevel={15}
-          centerCoordinate={[78, 26]}
+          centerCoordinate={[user?.longitude || 78,user?.latitude || 30]}
           // centerCoordinate={currentLocation}
-          
         />
         <MapmyIndiaGL.PointAnnotation
           key={'current-location-marker'}
           title="xyz"
           id={`current-location-marker`}
-          coordinate={[76.717873,30.704649]}
+          coordinate={[user?.longitude || 78,user?.latitude || 30]}
         >
           {createCurrentLocationIcon()}
           </MapmyIndiaGL.PointAnnotation>

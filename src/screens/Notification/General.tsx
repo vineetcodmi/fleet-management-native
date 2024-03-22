@@ -32,7 +32,7 @@ interface Event {
   comments: string;
 }
 const General = ({ data }: any) => {
-  const { eventStatusCode } = useEvents();
+  const { unitsStatusCode } = useEvents();
   const { user, token } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
@@ -67,7 +67,7 @@ const General = ({ data }: any) => {
       const location = data?.location;
       const id = data?.agencyEventId;
       const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
-      const match = location.match(pattern);
+      const match = location?.match(pattern);
       if (match) {
         const [latString, lngString] = match.slice(1);
         const latParts = latString.split(":").map(parseFloat);
@@ -102,7 +102,7 @@ const General = ({ data }: any) => {
   };
 
   const getUnitStatus = (unit: any) => {
-    const currentStatus = eventStatusCode?.filter(
+    const currentStatus = unitsStatusCode?.filter(
       (status: any) => status?.id === unit?.status
     )?.[0];
     return currentStatus;
@@ -208,6 +208,16 @@ const General = ({ data }: any) => {
     }
   };
 
+  const handleOpenMaps=()=>{
+    if (Platform.OS === "android") {
+      Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&origin=${user?.latitude},${user?.longitude}`);
+    } else if (Platform.OS === "ios") {
+      Linking.openURL(`http://maps.apple.com/?daddr=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&saddr=${user?.latitude},${user?.longitude}`);
+    } else {
+      console.log("Maps are not supported on this platform.");
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 0.4 }}>
@@ -261,7 +271,7 @@ const General = ({ data }: any) => {
                 </Text>
               </View>
 
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity style={styles.button} onPress={handleOpenMaps}>
                 <Feather name="map" size={18} color={colors.white} />
                 <Text style={styles.buttonText}>Open In Maps</Text>
               </TouchableOpacity>
@@ -625,7 +635,7 @@ const General = ({ data }: any) => {
                             size={22}
                           />
                         </View>
-                        <Text style={styles.notificationText}>{data.beat}</Text>
+                        <Text style={styles.notificationText}>{data?.beat}</Text>
                       </View>
                       <Text>
                         {moment(comment?.createdTime).format(
@@ -955,7 +965,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   pending: {
-    width: "30%",
+    width: "35%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderTopLeftRadius: 4,
@@ -966,7 +976,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   POcontainer: {
-    width: "20%",
+    width: "17%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     padding: 8,
@@ -981,7 +991,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dateContainer: {
-    width: "50%",
+    width: "48%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderRadius: 4,

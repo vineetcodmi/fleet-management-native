@@ -1,22 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import colors from "../../utlits/colors";
 import moment from "moment";
 import { OneSignal } from "react-native-onesignal";
+import { useNavigation } from "@react-navigation/native";
 
-const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
-  console.log(notificationSound,"notfication soundndnd---->>>>>>>>>>>>>>>");
+const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
+  const navigation = useNavigation();
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+
+  useEffect(() => {
+    const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
+    const match = dispatchData?.location?.match(pattern);
+    if (match) {
+      const [latString, lngString] = match.slice(1);
+      const latParts = latString.split(':').map(parseFloat);
+      const lngParts = lngString.split(':').map(parseFloat);
+      const lat = (latParts[0] + latParts[1] / 60 + latParts[2] / 3600).toFixed(
+        4,
+      );
+      const lng = (lngParts[0] + lngParts[1] / 60 + lngParts[2] / 3600).toFixed(
+        4,
+      );
+      setLatitude(lat);
+      setLongitude(lng);
+    }
+  }, [dispatchData]);
   
 
   const closeModalSound = () => {
-    if (notificationSound) {
-      console.log("Before stopping sound: ", notificationSound);
-      notificationSound.stop();
-      console.log("After stopping sound: ", notificationSound);
-      // notificationSound.release();
-      console.log("After releasing sound: ", notificationSound);
-    }
+    // if (notificationSound) {
+    //   console.log("Before stopping sound: ", notificationSound);
+    //   notificationSound.stop();
+    //   console.log("After stopping sound: ", notificationSound);
+    //   // notificationSound.release();
+    //   console.log("After releasing sound: ", notificationSound);
+    // }
+    navigation.navigate("Event", { item: dispatchData, isDispatch: true })
     closeModal();
   };
   return (
@@ -51,10 +73,10 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
             style={{ alignSelf: "center" }}
           />
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>P2308930398</Text>
+            <Text style={styles.title}>{dispatchData?.agencyEventId}</Text>
             <View style={styles.details}>
               <Text style={styles.leftText}>Event Type</Text>
-              <Text style={styles.rightText}>Accident</Text>
+              <Text style={styles.rightText}>{dispatchData?.agencyEventTypeCode}</Text>
             </View>
             <View
               style={[
@@ -63,7 +85,7 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
               ]}
             >
               <Text style={styles.leftText}>Event Sub Type</Text>
-              <Text style={styles.rightText}> Road Accident</Text>
+              <Text style={styles.rightText}>{dispatchData?.agencyEventSubtypeCode}</Text>
             </View>
             <View
               style={{
@@ -78,7 +100,7 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
               >
                 <Text style={styles.latLongText}>LAT</Text>
                 <View style={styles.latContainer}>
-                  <Text style={{ color: colors.textBlueColor }}>79.06</Text>
+                  <Text style={{ color: colors.textBlueColor }}>{latitude}</Text>
                 </View>
               </View>
               <View
@@ -88,7 +110,7 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
               >
                 <Text style={styles.latLongText}>LONG</Text>
                 <View style={styles.longContainer}>
-                  <Text style={{ color: colors.textBlueColor }}>48.07</Text>
+                  <Text style={{ color: colors.textBlueColor }}>{longitude}</Text>
                 </View>
               </View>
             </View>
@@ -107,7 +129,7 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
                     size={17}
                   />
                   <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                    Pending
+                    Dispatched
                   </Text>
                 </View>
                 <View style={styles.POcontainer}>
@@ -119,12 +141,12 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
                     />
                   </View>
                   <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                    PO
+                    P{dispatchData?.priority}
                   </Text>
                 </View>
                 <View style={styles.dateContainer}>
                   <Text style={{ color: colors.textBlueColor }}>
-                    {moment(data?.createdTime).format("DD/MM/YYYY - HH-mm-ss")}
+                    {moment(dispatchData?.createdTime).format("DD/MM/YYYY - HH-mm-ss")}
                   </Text>
                 </View>
               </View>
@@ -137,7 +159,7 @@ const DispatchNotifications = ({ closeModal, data ,notificationSound}: any) => {
               color: colors.grayTextColor,
             }}
           >
-            Unit LKWO2 has been dispatched to an event
+            Unit {dispatchData?.beat} has been dispatched to an event
           </Text>
           <TouchableOpacity style={styles.button} onPress={closeModalSound}>
             <View
@@ -241,7 +263,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
   },
   pending: {
-    width: "30%",
+    width: "35%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderTopLeftRadius: 4,
@@ -252,7 +274,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   POcontainer: {
-    width: "20%",
+    width: "17%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     padding: 8,
@@ -268,7 +290,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   dateContainer: {
-    width: "50%",
+    width: "48%",
     borderWidth: 1,
     borderColor: colors.grayBorderColor,
     borderRadius: 4,

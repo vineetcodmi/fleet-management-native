@@ -9,7 +9,7 @@ import LoginScreen from "../screens/Login/Login";
 import ChangePassword from "../screens/Login/ChangePassword";
 import AppDrawer from "./Drawer";
 import Dashboard from "../screens/Dashboard/Dashboard";
-import { Pressable, View, Modal, Text } from "react-native";
+import { Pressable, View, Modal, Text, Alert } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MapScreen from "../screens/Dashboard/MapScreen";
@@ -25,46 +25,85 @@ import DispatchNotifications from "../screens/Notification/DispatchNotification"
 import Sound from "react-native-sound";
 import FieldEvents from "../screens/Dashboard/FieldEvents";
 import { EventsProvider } from "../context/Events";
+import { baseUrl } from "../config";
+import ClearEvent from "../screens/Dashboard/ClearEvent";
 
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
-  const { user } = useAuth();
+  const { user, token, getUser } = useAuth();
   const [showNotification, setshowNotification] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [notificationSoundPlay, setNotificationSoundPlay] = useState<any>(null);
+  const [dispatchedEvent, setDispatchedEvent] = useState<any>(null);
   const handleToggleModal = () => {
     setModalVisible((prevState) => !prevState);
   };
 
-  OneSignal.Notifications.addEventListener("click", (event) => {
+  OneSignal.Notifications.addEventListener("click", async(event) => {
     console.log("OneSignal: notification clicked:", event);
-    setshowNotification(true);
+    const text = event?.notification?.body || "";
+    const regex = /P\d{11}/;
+    const match = text.match(regex);
+    const id = match ? match[0] : null;
+    await getDispatchEvent(id)
   });
 
-  OneSignal.Notifications.addEventListener("foregroundWillDisplay", (event) => {
-    console.log("OneSignal: notification on foreground:", event);
-    setshowNotification(true);
-    const notificationSound = new Sound(
-      "notification_sound.wav",
-      Sound.MAIN_BUNDLE,
-      (error) => {
-        if (error) {
-          console.log("Failed to load the sound", error);
-          return;
-        }
-        console.log("Sound loaded successfully", notificationSound);
-        setNotificationSoundPlay(notificationSound);
-        notificationSound.play();
-        // notificationSound.setVolume(1);
-        notificationSound.setNumberOfLoops(1);
-      }
-    );
+  OneSignal.Notifications.addEventListener("foregroundWillDisplay", async(event) => {
+    console.log("OneSignal: notification on foreground:", event?.notification?.body);
+    const text = event?.notification?.body || "";
+    const regex = /P\d{11}/;
+    const match = text.match(regex);
+    const id = match ? match[0] : null;
+    await getDispatchEvent(id)
+    // const notificationSound = new Sound(
+    //   "notification_sound.wav",
+    //   Sound.MAIN_BUNDLE,
+    //   (error) => {
+    //     if (error) {
+    //       console.log("Failed to load the sound", error);
+    //       return;
+    //     }
+    //     console.log("Sound loaded successfully", notificationSound);
+    //     setNotificationSoundPlay(notificationSound);
+    //     notificationSound.play();
+    //     // notificationSound.setVolume(1);
+    //     notificationSound.setNumberOfLoops(1);
+    //   }
+    // );
   });
+
+  // useEffect(() => {
+  //   if(user?.status === 7){
+  //     getDispatchEvent("P07032400001")
+  //   }
+  // },[])
+
+  const getDispatchEvent = async (id: string | null) => {
+    console.log(id,"dispatch id");
+    
+    try {
+      const toToken = `Bearer ${token}`;
+      axios
+        .get(baseUrl + `/cad/api/v2/event/${id}`, {
+          headers: {
+            Authorization: toToken,
+          },
+        })
+        .then(res => {
+          console.log(res.data,"dispatch data");
+          setDispatchedEvent(res.data);
+          getUser(user?.unitId, token)
+          setshowNotification(true);
+        });
+    } catch (error) {
+      console.log(error, 'error');
+    }
+  };
 
   const saveDevice = async (device: any) => {
     console.log(device,"devicee");
-    
+    Alert.alert(device?.deviceId)
     try {
       const header = {
         headers: {
@@ -72,11 +111,11 @@ const RootStack = () => {
         },
       };
       const response = await axios.post(
-        `http://localhost:8000/api/users`,
+        `http://cad.112.up.gov.in:8000/api/users`,
         device,
         header
       );
-      console.log(response,"responseeee");
+      console.log(response?.data,"responseeee");
       
       return response;
     } catch (error) {
@@ -239,18 +278,24 @@ const RootStack = () => {
             component={Event}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="ClearEvent"
+            component={ClearEvent}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
-      </NavigationContainer>
-      <Modal
+        <Modal
         animationType="slide"
         transparent={true}
         visible={showNotification}
       >
         <DispatchNotifications
+          dispatchData={dispatchedEvent}
           closeModal={closeModal}
           notificationSound={notificationSoundPlay}
         />
       </Modal>
+      </NavigationContainer>
       </EventsProvider>
   );
 };

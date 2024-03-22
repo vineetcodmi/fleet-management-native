@@ -60,7 +60,7 @@ const FlatListData = ({ data }: any) => {
   const renderItem = (item: any) => { 
     const location = item?.location;
     const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
-    const match = location.match(pattern);
+    const match = location?.match(pattern);
     let latitude = "";
     let longitude = "";
   

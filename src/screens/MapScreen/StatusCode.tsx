@@ -13,6 +13,8 @@ import colors from '../../utlits/colors';
 import {useAuth} from '../../context/Auth';
 import axios from 'axios';
 import {baseUrl} from '../../config';
+import { STATUS_CODE_COLOR, STATUS_CODE_ICON } from '../../constant/statusCodeConstant';
+import { Image } from 'react-native';
 
 interface statuscode {
   id: number;
@@ -36,7 +38,7 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
   // const [statusCodeData, setStatusCodeData] = useState<statuscode[]>([]);
   const [updateStatus, setUpdateStatus] = useState<statuscode[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null); // State to track selected item ID
-  const { user, token } = useAuth();
+  const { user, token, getUser } = useAuth();
   const header = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -46,8 +48,9 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
 
   const statuscode = async (data: any) => {
     try {
-      const response = await axios.post(baseUrl + `/cad/api/v2/unit/status`, data, header);
+      const response = await axios.post(baseUrl + `/cad/api/v2/unit/${data?.unitId}/status`, data, header);
       console.log(response.data, 'dattatat');
+      getUser(data?.unitId, token)
       return response.data;
     } catch (err) {
       console.log(err, 'my errorr');
@@ -63,7 +66,8 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
     try {
       await statuscode(data);
       setSelectedItemId(item.id);
-      Alert.alert('Status updated successfully');
+      getUser(user?.unitId, token);
+      closeModal();
     } catch (err) {
       Alert.alert('Something went wrong');
     }
@@ -82,7 +86,7 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
         statusToUpdate.includes(item.id),
       );
       setUpdateStatus(updateStatusList);
-      console.log(updateStatusList,"updateess statusuus");
+      console.log(updateStatusList?.[0],"updateess statusuus");
       
     }
   }, [user,statusCodeData]);
@@ -91,21 +95,17 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
     <TouchableOpacity onPress={() => handleUpdateUnitStatus(item)}>
       <View style={[styles.contentContainer, selectedItemId === item.id && { borderColor: 'green' }]}>
         <View style={styles.rowContainer}>
-          <View style={[styles.Icon, { backgroundColor: 'green' }]}>
-            <MaterialCommunityIcons
-              name={statusIcons[item.id]}
-              color={colors.white}
-              size={22}
-            />
+          <View style={[styles.Icon, { backgroundColor: STATUS_CODE_COLOR?.[item?.id || 0] }]}>
+            <Image source={STATUS_CODE_ICON?.[item?.id || 0]} />
           </View>
           <Text style={{ marginLeft: 10 }}>{item.description}</Text>
         </View>
-        {selectedItemId === item.id && ( 
+        {user?.status === item.id && ( 
           <View
             style={{
               height: 32,
               width: 32,
-              backgroundColor: 'green',
+              backgroundColor: "green",
               borderRadius: 20,
               alignItems: 'center',
               justifyContent: 'center',
