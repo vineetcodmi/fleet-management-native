@@ -62,7 +62,7 @@ const Event = ({ navigation, route }: any) => {
           </View>
         </View>
       </View>
-      {isDispatch && <StatusBar unit={user} event={data} unitsStatusCode={unitsStatusCode}/>}
+      {[7,8,9,15]?.includes(user?.status || 0) && <StatusBar unit={user} event={data} unitsStatusCode={unitsStatusCode}/>}
       <TabController
       
         items={[
