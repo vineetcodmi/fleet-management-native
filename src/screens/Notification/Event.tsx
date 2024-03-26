@@ -16,9 +16,6 @@ const Event = ({ navigation, route }: any) => {
   const data = route.params?.item;
   const isDispatch = route.params?.isDispatch;
 
-  console.log(user, "user");
-  
-
   useEffect(() => {
     if(user){
       getUser(user?.unitId, token);

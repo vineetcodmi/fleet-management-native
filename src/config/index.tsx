@@ -1,1 +1,1 @@
-export const baseUrl="https://mrrajdev.hexagon.com/cad/api/v2";
+export const baseUrl="https://cad.up112.in";

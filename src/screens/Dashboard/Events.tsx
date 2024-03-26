@@ -13,21 +13,24 @@ import Report from "../Events/Report";
 import { useAuth } from "../../context/Auth";
 
 const Events = () => {
-  const { eventData,user } = useAuth();
+  const { eventData,user, events } = useAuth();
   const [activeTab, setActiveTab] = useState("Report");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [pendingEvents, setPendingEvents] = useState<any>();
   const [dispatchEvents, setDispatchEvents] = useState<any>();
 
+  useEffect(() => {
+    events();
+  },[]);
+
+  console.log(eventData, "eventData");
   
 
   useEffect(() => {
     if (eventData && eventData?.length > 0) {
-      const pendingList = eventData
-        ?.filter((event: any) => event?.statusCode === 7);
-      const dispatchList = eventData
-        ?.filter((event: any) => event?.statusCode === 18);
+      const pendingList = eventData?.filter((event: any) => event?.statusCode === 7);
+      const dispatchList = eventData?.filter((event: any) => event?.statusCode === 18);
       setPendingEvents([...pendingList]);
       setDispatchEvents([...dispatchList]);
     }

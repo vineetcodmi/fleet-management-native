@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useAuth } from "../../context/Auth";
@@ -16,6 +17,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { baseUrl } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ServerLogin = ({ route, navigation }: any) => {
   const { token, user } = useAuth();
@@ -24,6 +26,18 @@ const ServerLogin = ({ route, navigation }: any) => {
   const [educationScannedData, setEducationScannedData] = useState("");
   const serverKey = route.params?.serverKey;
   const scannedData = route.params?.scannedData || "";
+
+  useEffect(() => {
+    const checkServer = async() => {
+      const user = await AsyncStorage?.getItem("server");
+      const data = JSON?.parse(user || "");
+      console.log(data, "serverData");
+      if(data?.company){
+        navigation.replace("LoginScreen", { productionData: data });
+      }
+    }
+    checkServer();
+  },[])
 
   useEffect(() => {
     if (serverKey === "production") {
@@ -45,14 +59,15 @@ const ServerLogin = ({ route, navigation }: any) => {
       const toToken = `Bearer${token}`;
       const server = values?.production;
       axios
-        .get(server, {
-          headers: {
-            Authorization: toToken,
-          },
-        })
-        .then((res) => {
+        .get(server)
+        .then(async(res) => {
           const data = res.data;
+          const serverData = JSON.stringify(data);
+          await AsyncStorage.setItem("server", serverData);
           navigation.replace("LoginScreen", { productionData: data });
+        }).catch((err:any) => {
+          setLoading(false);
+          Alert.alert("Something went wrong")
         });
     } catch (error) {
       setLoading(false);
@@ -85,8 +100,8 @@ const ServerLogin = ({ route, navigation }: any) => {
   });
 
   const initialValues = {
-    production: "",
-    education: "",
+    production: productionScannedData || "",
+    education: educationScannedData || "",
   };
 
   return (
@@ -110,6 +125,7 @@ const ServerLogin = ({ route, navigation }: any) => {
             onSubmit={handleServerProduction}
             initialValues={initialValues}
             validationSchema={validationSchema}
+            enableReinitialize={true}
           >
             {({
               handleChange,

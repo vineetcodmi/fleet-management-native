@@ -28,13 +28,14 @@ interface AuthContextType {
   login: (username: string, password: string, unitId: string) => Promise<String | undefined>;
   logout: () => void;
   getUser: (userId: any, token:any) => void;
-  events: (id: string) => void;
+  events: () => void;
   token: string | null;
   setAuthToken: (token: string) => void;
   setUnitIdToStorage: (unitId: string) => void;
   deleteAccount: (data: { unitId: string; comment: string }) => void;
   eventData: Event;
   unitId: string | null;
+  fetchToken: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -49,6 +50,7 @@ const AuthContext = createContext<AuthContextType>({
   deleteAccount: () => {},
   unitId: null,
   eventData: undefined,
+  fetchToken: () => {}
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -62,6 +64,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [unitId, setUnitId] = useState<string | null>(null);
   const [eventData, setEventData] = useState<Event>();
+  const [loginUser, setLoginUser] = useState<Event>();
 
   const header = {
     headers: {
@@ -84,8 +87,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       }
       axios
         .post(baseUrl + `/cad/api/v2/unit/logon`, data, header)
-        .then((response) => {
+        .then(async(response) => {
           setUser(response.data);
+          await AsyncStorage.setItem("user", JSON.stringify(response.data))
           console.log(response.data, "data  ===>");
         })
         .catch((error) => {
@@ -108,64 +112,73 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const fetchUnitId = async () => {
     try {
       const storedUnitId = await AsyncStorage.getItem("unitId");
+      const storedToken = await AsyncStorage.getItem("token");
+      console.log(storedToken, storedUnitId);
+      
       if (storedUnitId) {
         setUnitId(storedUnitId);
+        getUser(storedUnitId,storedToken)
       }
     } catch (error) {
       // console.error("Error retrieving unitId from AsyncStorage:", error);
     }
   };
+
   const fetchToken = async () => {
     try {
-      if(token){
-        const storedUser = await AsyncStorage.getItem("loggedUserInfo");
-        if(storedUser){
-          const userData = JSON.parse(storedUser || "");
-          console.log(userData, "kk");
-          await axios
-            .post(baseUrl + `/cad/api/v2/token`, {
-              username: userData?.username,
-              password: userData?.field,
-            })
-            .then(async(res) => {
-              const token = res.data;
-              setAuthToken(token);
-              setToken(token);
-              return token;
-            });
-        }
-      }
+      const data = await AsyncStorage.getItem("loggedUserInfo");
+      const userData = JSON.parse(data || "");
+      console.log(userData, "kkk");
+      
+      return await axios
+        .post(baseUrl + `/cad/api/v2/token`, userData)
+        .then(async(res) => {
+          console.log(res, "ll");
+          const token = res?.data;
+          setAuthToken(token);
+          setToken(token);
+          await AsyncStorage.setItem("token", token || "");
+          console.log(token, "token");
+          return token;
+        }).catch((err: any) => {
+          console.log(err, "Error in token fetching");
+        });
     } catch (error) {
       // console.error("Error retrieving token from AsyncStorage:", error);
     }
   };
 
   useEffect(() => {
-    fetchToken();
-    const interval = setInterval(fetchToken, 60000); // Fetch token every minute (60 * 1000 milliseconds)
-
-    // Cleanup function to clear the interval when component unmounts
-    return () => clearInterval(interval);
+    if(token && loginUser){
+      fetchToken();      
+      const interval = setInterval(fetchToken, 60000);
+      return () => clearInterval(interval);
+    }
   }, []);
-
 
   useEffect(() => {
-    // fetchToken();
+    fetchToken();
     fetchUnitId();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchUser = async() => {
+  //     const user = await AsyncStorage.getItem("user");
+  //     const userData =  JSON.parse(user);
+  //   }
+  // },[])
 
   // console.log(unitId, "kk");
   
 
-  useEffect(() => {
-    if (token) { 
-      events();
-      // unitId && getUser(unitId);
-    }
-  }, [unitId, token]);
+  // useEffect(() => {
+  //   if (token) { 
+  //     events();
+  //   }
+  // }, [unitId, token]);
 
   const login = async (username: string, password: string, unitId: string) => {
-    console.log("in token creation");
+    console.log("in token creation", password);
     
     try {
       return axios
@@ -174,13 +187,15 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
           password,
         })
         .then(async(res) => {
+          console.log(res,"jj");
+          
           const token = res.data;
           setAuthToken(token);
-          const userInfo = JSON.stringify({
-            username: username,
-            field: password
-          });
-          await AsyncStorage.setItem("loggedUserInfo", userInfo);
+          const userInfo = {
+            username,
+            password
+          };
+          await AsyncStorage.setItem("loggedUserInfo", JSON.stringify(userInfo));
           setToken(token);
           getUser(unitId, token);
           return token;
@@ -205,21 +220,22 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
+    console.log("ii", unitId);
+    
     try {
       axios
       .post(baseUrl + "/cad/api/v2/unit/logoff", {unitId: unitId}, header)
       .then(async(res) => {
-        console.log("Logged Off");
-        
         await AsyncStorage.removeItem("token");
         await AsyncStorage.removeItem("loggedUserInfo")
-        // await AsyncStorage.removeItem("unitId");
+        await AsyncStorage.removeItem("unitId");
+        await AsyncStorage.removeItem("user");
         setToken(null);
         setUnitId(null);
         setUser(undefined);
       })
       .catch((err) => {
-        // console.log(err, "my errorr");
+        console.log(err, "my errorr");
       });
 
       // setEventData(undefined);
@@ -239,6 +255,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
   const events = async () => {
     const toToken = `Bearer ${token}`;
+    console.log(token, "jj");
+    
     try {
       await axios
         .get(baseUrl + "/cad/api/v2/event/monitor", {
@@ -246,11 +264,12 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
             Authorization: toToken,
           },
         })
-        .then((res) => {
+        .then((res:any) => {
+          console.log(res, res?.data, "my event data");
           setEventData(res.data);
         });
     } catch (error) {
-      // console.log("error eventsss", error);
+      console.log("error eventsss", error);
     }
   };
 
@@ -268,6 +287,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         setUnitIdToStorage,
         events,
         eventData,
+        fetchToken
       }}
     >
       {children}

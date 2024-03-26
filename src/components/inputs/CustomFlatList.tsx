@@ -127,7 +127,7 @@ const FlatListData = ({ data }: any) => {
           </View>
           <View style={styles.details}>
             <Text style={styles.leftText}>Event Sub Type</Text>
-            <Text style={styles.rightText}> {item.agencyEventSubtypeCode}</Text>
+            <Text style={styles.rightText}> {item?.agencyEventSubtypeCode}</Text>
           </View>
 
             <View

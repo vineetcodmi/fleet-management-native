@@ -49,8 +49,7 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
   const statuscode = async (data: any) => {
     try {
       const response = await axios.post(baseUrl + `/cad/api/v2/unit/${data?.unitId}/status`, data, header);
-      console.log(response.data, 'dattatat');
-      getUser(data?.unitId, token)
+      getUser(data?.unitId, token);
       return response.data;
     } catch (err) {
       console.log(err, 'my errorr');
@@ -75,19 +74,11 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
 
   useEffect(() => {
     if (user && statusCodeData) {
-      console.log(user,"userr");
-      console.log(statusCodeData,"status code datatt");
-      
-      
       const status = statusCodeData.find((item:any) => item.id === user.status);
-      console.log(status,"statuss");
-      
       const updateStatusList = statusCodeData.filter((item:any) =>
         statusToUpdate.includes(item.id),
       );
       setUpdateStatus(updateStatusList);
-      console.log(updateStatusList?.[0],"updateess statusuus");
-      
     }
   }, [user,statusCodeData]);
 

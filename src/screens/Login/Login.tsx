@@ -22,12 +22,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const productionData = route.params;
-  const { login, getUser} = useAuth();
+  const { login, fetchToken } = useAuth();
   
-
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {    
+    const checkUser = async() => {
+      const loggedUnit = await AsyncStorage.getItem("user");
+      const loggedUser = await AsyncStorage.getItem("loggedUserInfo");
+      const unitData =  JSON.parse(loggedUnit || "");
+      const userData =  JSON.parse(loggedUser || "");
+      if(userData && unitData){
+        const token:any = await fetchToken();
+        if (token) {
+          navigation.replace("BottomNavigation");
+        }
+      }
+    }
+    checkUser();
+  },[])
 
   const handleLogin = async (values: any) => {
     try {
@@ -51,14 +66,6 @@ const LoginScreen = ({ navigation, route }: any) => {
     }
   };
 
-  useEffect(() => {
-    const remove = async() => {
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
-      await AsyncStorage.removeItem("unitId");
-    }
-    remove();
-  },[])
 
   const toggleRememberMe = () => {
     setRememberMe(!rememberMe);
@@ -79,9 +86,11 @@ const LoginScreen = ({ navigation, route }: any) => {
     unitId: Yup.string().required("Unit ID is required"),
     password: Yup.string().required("Password is required"),
   });
-  const handleLinkOutline = () => {
+  const handleLinkOutline = async() => {
+    await AsyncStorage.removeItem("server")
     navigation.navigate("ServerLogin");
   };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -98,7 +107,7 @@ const LoginScreen = ({ navigation, route }: any) => {
       </View>
       <View style={styles.content}>
         <ScrollView>
-          <Text style={styles.heading}>INTEGRAPH MOBILE RESPONDER</Text>
+          <Text style={styles.heading}>INTERGRAPH MOBILE RESPONDER</Text>
           <Formik
             onSubmit={handleLogin}
             initialValues={initialValues}

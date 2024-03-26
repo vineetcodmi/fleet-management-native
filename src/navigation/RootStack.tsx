@@ -103,7 +103,6 @@ const RootStack = () => {
 
   const saveDevice = async (device: any) => {
     console.log(device,"devicee");
-    Alert.alert(device?.deviceId)
     try {
       const header = {
         headers: {
@@ -111,12 +110,11 @@ const RootStack = () => {
         },
       };
       const response = await axios.post(
-        `http://cad.112.up.gov.in:8000/api/users`,
+        `https://CADAPP.up112.in/api/users`,
         device,
         header
       );
-      console.log(response?.data,"responseeee");
-      
+      console.log(response?.data, device?.deviceId,"responseeee");
       return response;
     } catch (error) {
       console.error("Error saving device:", error);

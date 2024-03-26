@@ -24,7 +24,13 @@ const StatusBar = ({unit,event,unitsStatusCode}:any) => {
   useEffect(() => {
     if (unitsStatusCode) {
       const updateStatusList = unitsStatusCode?.filter((item:any) => statusToUpdate?.includes(item?.id));
-      setStatusToShow([...updateStatusList])
+      const acknowledgeStatus = unitsStatusCode.filter((item:any) =>
+      item?.id === 15,
+    )?.[0];
+    const remainingStatus = updateStatusList.filter((item:any) =>
+      item?.id !== 15 && item?.id !== 7,
+    );
+    setStatusToShow([updateStatusList?.[0], acknowledgeStatus, ...remainingStatus]);
     }
   },[unitsStatusCode])
 

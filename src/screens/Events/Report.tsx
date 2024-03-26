@@ -8,8 +8,6 @@ import axios from 'axios';
 
 const Report = ({dispatchEvents}: any) => {
   const{ user, token }=useAuth();
-
-  console.log(user,"usrer");
   
   const [currentAssignedEvent, setCurrentAssignedEvent] = useState<any>();
 
@@ -23,9 +21,10 @@ const Report = ({dispatchEvents}: any) => {
             Authorization: toToken,
           },
         }).then(((res:any)=>{
-          setCurrentAssignedEvent([res?.data])
+          if(res?.data !== null){
+            setCurrentAssignedEvent([res?.data])
+          }
           console.log(res.data,"res datata");
-          
       })) 
       } catch(error) {
         console.log('error eventsss', error);
@@ -33,14 +32,19 @@ const Report = ({dispatchEvents}: any) => {
     }
   },[user])
 
-  
  
   return (
     <ScrollView style={{marginBottom:120}}>
       <Text style={styles.assignText}>Current Assign</Text>
-      <FlatListData data={currentAssignedEvent} />
+      {currentAssignedEvent?.length > 0 
+        ? <FlatListData data={currentAssignedEvent} />
+        : <Text style={{padding: 8}}>Currently no event is assigned</Text>
+      }
       <Text style={styles.assignText}>Dispatch Assign</Text>
-      <FlatListData data={dispatchEvents} />
+      {dispatchEvents?.length > 0 
+        ? <FlatListData data={dispatchEvents} />
+        : <Text style={{padding: 8}}>There is no any dispatched event</Text>
+      }
     </ScrollView>
   );
 };

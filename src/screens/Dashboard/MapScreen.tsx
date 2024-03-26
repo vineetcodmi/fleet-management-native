@@ -36,7 +36,7 @@ interface EventData {}
 interface UnitData {}
 
 const MapScreen = () => {
-  const {token,user} = useAuth();
+  const {token,user,getUser} = useAuth();
   const{unitsStatusCode}=useEvents();
   const [markersEvents, setMarkersEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,50 +70,91 @@ const MapScreen = () => {
   }
 
   useEffect(() => {
-    getCurrentLocation();
-  },[]);
- const getCurrentLocation = async () => {
-  try {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'This app needs access to your location.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(
-          (position:any) => {
-            setCurrentLocation([position.coords.latitude, position.coords.longitude]);
-          },
-          (error:any) => {
-            console.log(error.code, error.message);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-        );
-      } else {
-        console.log('Location permission denied');
+    const getUnitLiveLocation = async() => {
+      const currentLocationCoords:any = await getCurrentLocation();
+      const unitId = await AsyncStorage.getItem("unitId");
+      
+      const data = {
+        unitId: unitId || "",
+        deviceId: unitId || "",
+        latitude: (currentLocationCoords?.latitude|| "").toString(),
+        longitude: (currentLocationCoords?.longitude || "").toString(),
+        heading: (currentLocationCoords?.heading|| "0").toString(),
+        speedKph: (currentLocationCoords?.speed|| "0").toString(),
       }
-    } else {
-      // For iOS, location permission is requested when the app is in use.
-      Geolocation.getCurrentPosition(
-        (position:any) => {
-          setCurrentLocation([position.coords.latitude, position.coords.longitude]);
-        },
-        (error:any) => {
-          console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-      );
+      console.log(data, "hh");
+      
+      await axios.post(baseUrl + `/cad/api/v2/unit/livelocation`, data, header).then((res) => {
+        getUser(unitId, token)
+      }).catch((err) => {
+        console.log(err, "oooo");
+      });
     }
-  } catch (err) {
-    console.warn(err);
-  }
-};
+    const interval = setInterval(() => {
+      getUnitLiveLocation();
+    }, 3 * 60 * 1000);
+    getUnitLiveLocation();
+    return () => clearInterval(interval);
+  },[]);
+
+  const getCurrentLocation = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'This app needs access to your location.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          return new Promise((resolve, reject) => {
+            Geolocation.getCurrentPosition(
+              (position:any) => {
+                const { latitude, longitude, heading, speed } = position.coords;
+                const locationData:any = { latitude, longitude, heading, speed };
+                setCurrentLocation(locationData);
+                resolve(locationData);
+              },
+              (error:any) => {
+                console.log(error.code, error.message);
+                resolve(null); // Resolve with null if there's an error
+              },
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+            );
+          });
+        } else {
+          console.log('Location permission denied');
+          return null;
+        }
+      } else {
+        // For iOS, location permission is requested when the app is in use.
+        return new Promise((resolve, reject) => {
+          Geolocation.getCurrentPosition(
+            (position:any) => {
+              const { latitude, longitude, heading, speed } = position.coords;
+              const locationData:any = { latitude, longitude, heading, speed };
+              setCurrentLocation(locationData);
+              resolve(locationData);
+            },
+            (error:any) => {
+              console.log(error.code, error.message);
+              resolve(null); // Resolve with null if there's an error
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          );
+        });
+      }
+    } catch (err) {
+      console.warn(err);
+      return null;
+    }
+  };
+  
+  
   const fetchData = async () => {
     try {
       const toToken = `Bearer ${token}`;
@@ -227,14 +268,14 @@ const MapScreen = () => {
 
   return (
     <View style={{flex: 1}}>
-      <View style={{flex: 0.9}}>
+      <View style={{flex: 1}}>
         {loading ? (
           <ActivityIndicator
             size="large"
             color={colors.black}
             style={{alignContent: 'center'}}
           />
-        ) : selectedOption === 'mapMyIndia' ? (
+        ) : (
           <MapMyIndia
             eventMarker={markersEvents}
             unitMarker={markersUnit}
@@ -243,19 +284,29 @@ const MapScreen = () => {
             handleMarkerUnitClick={handleMarkerUnitClick}
             currentLocation={currentLocation}
           />
-        ) : (
-          <MapBox
-            eventMarker={markersEvents}
-            unitMarker={markersUnit}
-            activeTab={activeTab}
-            eventData={eventData}
-            handleMarkerEventsClick={handleMarkerEventsClick}
-            handleMarkerUnitClick={handleMarkerUnitClick}
-            currentLocation={currentLocation}
-          />
         )}
+        {/* // selectedOption === 'mapMyIndia' ? (
+        //   <MapMyIndia
+        //     eventMarker={markersEvents}
+        //     unitMarker={markersUnit}
+        //     activeTab={activeTab}
+        //     handleMarkerEventsClick={handleMarkerEventsClick}
+        //     handleMarkerUnitClick={handleMarkerUnitClick}
+        //     currentLocation={currentLocation}
+        //   />
+        // ) : (
+        //   <MapBox
+        //     eventMarker={markersEvents}
+        //     unitMarker={markersUnit}
+        //     activeTab={activeTab}
+        //     eventData={eventData}
+        //     handleMarkerEventsClick={handleMarkerEventsClick}
+        //     handleMarkerUnitClick={handleMarkerUnitClick}
+        //     currentLocation={currentLocation}
+        //   />
+        // )} */}
       </View>
-      <View
+      {/* <View
         style={{
           padding: 10,
           flex: 0.14,
@@ -390,7 +441,7 @@ const MapScreen = () => {
             </View>
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
       <Modal
         animationType="slide"
         transparent={true}

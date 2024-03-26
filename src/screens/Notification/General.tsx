@@ -212,7 +212,7 @@ const General = ({ data }: any) => {
     if (Platform.OS === "android") {
       Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&origin=${user?.latitude},${user?.longitude}`);
     } else if (Platform.OS === "ios") {
-      Linking.openURL(`http://maps.apple.com/?daddr=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&saddr=${user?.latitude},${user?.longitude}`);
+      Linking.openURL(`https://maps.apple.com/?daddr=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&saddr=${user?.latitude},${user?.longitude}`);
     } else {
       console.log("Maps are not supported on this platform.");
     }
@@ -221,7 +221,7 @@ const General = ({ data }: any) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 0.4 }}>
-        {selectedMap === "mapMyIndia" ? (
+        {/* {selectedMap === "mapMyIndia" ? ( */}
           <MapMyIndia
             eventMarker={markersEvents}
             unitMarker={[]}
@@ -231,7 +231,7 @@ const General = ({ data }: any) => {
             currentLocation={currentLocation}
             isEventDetail={true}
           />
-        ) : (
+        {/* ) : (
           <MapBox
             eventMarker={markersEvents}
             unitMarker={[]}
@@ -241,7 +241,7 @@ const General = ({ data }: any) => {
             currentLocation={currentLocation}
             isEventDetail={true}
           />
-        )}
+        )} */}
       </View>
       <ScrollView style={{ flex: 0.7 }}>
         <View style={styles.container}>
