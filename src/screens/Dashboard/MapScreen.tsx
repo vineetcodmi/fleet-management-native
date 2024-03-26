@@ -49,27 +49,29 @@ const MapScreen = ({navigation}:any) => {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [unitData, setUnitData] = useState<UnitData | null>();
 
-  useEffect(() => {
-    const getDispatchEvent = async () => {
-      if([7,8,9,15]?.includes(user?.status || 0) && user?.assignedAgencyEventId){
-        try {
-          const toToken = `Bearer ${token}`;
-          const response = await axios.get(baseUrl + `/cad/api/v2/event/${user?.assignedAgencyEventId}`, {
-            headers: {
-              Authorization: toToken,
-            },
-          });
-          const dispatchData = response.data;
-          if(dispatchData){
-            navigation.navigate("Event", { item: dispatchData, isDispatch: true });
-          }
-        } catch (error) {
-          console.error("Error fetching dispatch data:", error);
-        }
-      }
-    };
-    getDispatchEvent();
-  },[user])
+  // useEffect(() => {
+  //   if(user){
+  //     const getDispatchEvent = async () => {
+  //       if([7,8,9,15]?.includes(user?.status || 0) && user?.assignedAgencyEventId){
+  //         try {
+  //           const toToken = `Bearer ${token}`;
+  //           const response = await axios.get(baseUrl + `/cad/api/v2/event/${user?.assignedAgencyEventId}`, {
+  //             headers: {
+  //               Authorization: toToken,
+  //             },
+  //           });
+  //           const dispatchData = response.data;
+  //           if(dispatchData){
+  //             navigation.navigate("Event", { item: dispatchData, isDispatch: true });
+  //           }
+  //         } catch (error) {
+  //           console.error("Error fetching dispatch data:", error);
+  //         }
+  //       }
+  //     };
+  //     getDispatchEvent();
+  //   }
+  // },[user])
 
   const header = {
     headers: {

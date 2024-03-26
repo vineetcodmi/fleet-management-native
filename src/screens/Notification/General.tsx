@@ -519,7 +519,7 @@ const General = ({ data }: any) => {
             </View>
           </View>
 
-          <Text style={styles.headerTextStyle}>Case Number</Text>
+          {/* <Text style={styles.headerTextStyle}>Case Number</Text>
           <View
             style={{
               borderWidth: 1,
@@ -567,7 +567,7 @@ const General = ({ data }: any) => {
                 <Text style={styles.buttonText}>Add</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
 
           <View
             style={{
@@ -670,7 +670,7 @@ const General = ({ data }: any) => {
             </View>
           </View>
 
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -716,7 +716,7 @@ const General = ({ data }: any) => {
                 <Text style={styles.buttonText}>Add</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
 
           <Text style={styles.headerTextStyle}>Times</Text>
           <View style={styles.contentContainer}>
