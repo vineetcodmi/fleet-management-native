@@ -46,6 +46,32 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
   };
   const statusToUpdate = [0, 1, 2, 3, 4, 5, 6];
 
+  useEffect(() => {
+    if (user && statusCodeData) {
+      
+      const statusUpdateIdList = [7,8,9,15]?.includes(user?.status || 0) ? [7,15,8,9,13,14] : statusToUpdate;
+      
+      const status = statusCodeData.find((item:any) => item.id === user.status);
+      const updateStatusList = statusCodeData.filter((item:any) =>
+        statusUpdateIdList.includes(item.id),
+      );
+
+      console.log(updateStatusList, "jjj");
+
+      if([7,8,9,15]?.includes(user?.status || 0)){
+        const acknowledgeStatus = statusCodeData.filter((item:any) =>
+          item?.id === 15,
+        )?.[0];
+        const remainingStatus = updateStatusList.filter((item:any) =>
+          item?.id !== 15 && item?.id !== 7,
+        );
+        setUpdateStatus([updateStatusList?.[0], acknowledgeStatus, ...remainingStatus]);
+      } else {
+        setUpdateStatus(updateStatusList);
+      }
+    }
+  }, [user,statusCodeData]);
+
   const statuscode = async (data: any) => {
     try {
       const response = await axios.post(baseUrl + `/cad/api/v2/unit/${data?.unitId}/status`, data, header);
@@ -72,15 +98,6 @@ const StatusCodesComponent = ({ closeModal ,statusCodeData}: any) => {
     }
   };
 
-  useEffect(() => {
-    if (user && statusCodeData) {
-      const status = statusCodeData.find((item:any) => item.id === user.status);
-      const updateStatusList = statusCodeData.filter((item:any) =>
-        statusToUpdate.includes(item.id),
-      );
-      setUpdateStatus(updateStatusList);
-    }
-  }, [user,statusCodeData]);
 
   const renderItem = ({ item }: any) => (
     <TouchableOpacity onPress={() => handleUpdateUnitStatus(item)}>
