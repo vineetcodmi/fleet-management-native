@@ -878,7 +878,7 @@ const General = ({ data, isMapLoading }: any) => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </Ke>
+    </KeyboardAvoidingView>
   );
 };
 
