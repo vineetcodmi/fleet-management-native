@@ -81,7 +81,7 @@ const StatusBar = ({unit,event,unitsStatusCode, setIsMapLoading}:any) => {
             <SimpleLineIcons
               name="refresh"
               size={20}
-              color={colors.grayBorderColor}
+              color={colors.black}
             />
           </TouchableOpacity>
             
@@ -92,7 +92,7 @@ const StatusBar = ({unit,event,unitsStatusCode, setIsMapLoading}:any) => {
               width: 30,
               borderRadius: 20,
               backgroundColor: colors.grayBackgroundColor,
-              borderColor: colors.grayBorderColor,
+              borderColor: colors.black,
               borderWidth: 1,
               justifyContent: 'center',
               alignItems: 'center',
@@ -102,7 +102,7 @@ const StatusBar = ({unit,event,unitsStatusCode, setIsMapLoading}:any) => {
             <MaterialIcons
               name="keyboard-arrow-down"
               size={20}
-              color={colors.grayBorderColor}
+              color={colors.black}
             />
           </TouchableOpacity>
         </View>

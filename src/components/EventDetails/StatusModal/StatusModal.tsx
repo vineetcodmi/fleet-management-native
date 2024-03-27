@@ -56,7 +56,7 @@ const StatusModal = ({ closeModal, statusCodeData, unit, event, setIsMapLoading 
         } catch (err) {
             console.log(err, "ll");
             setIsMapLoading(false);
-            Alert.alert('Something went wrong');
+            Alert.alert("Can't update to this status");
         }
     };
 

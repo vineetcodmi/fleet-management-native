@@ -427,7 +427,7 @@ const General = ({ data, isMapLoading }: any) => {
               }}
             >
               <Text style={{ color: colors.white, textAlign: "center" }}>
-                {data?.assignedUnits?.length - 1 || 0}
+                {data?.assignedUnits?.length === 1 || data?.assignedUnits?.length === 0 ? 0 : data?.assignedUnits?.length - 1 || 0}
               </Text>
             </View>
           </View>

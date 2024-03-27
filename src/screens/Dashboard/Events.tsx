@@ -11,21 +11,48 @@ import colors from "../../utlits/colors";
 import AllEvents from "../Events/AllEvents";
 import Report from "../Events/Report";
 import { useAuth } from "../../context/Auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { baseUrl } from "../../config";
 
 const Events = () => {
-  const { eventData,user, events } = useAuth();
+  const { eventData, events, token } = useAuth();
   const [activeTab, setActiveTab] = useState("Report");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [pendingEvents, setPendingEvents] = useState<any>();
   const [dispatchEvents, setDispatchEvents] = useState<any>();
+  const [currentAssignedEvent, setCurrentAssignedEvent] = useState<any>();
+
+  useEffect(()=>{
+    const getCurrentAssignedEvent = async() => {
+      const units = await AsyncStorage.getItem("user");
+      const unitData = JSON.parse(units || "");
+      if(unitData?.assignedAgencyEventId){
+        const id =unitData.assignedAgencyEventId;
+        const toToken = `Bearer ${token}`;
+         try {
+            axios.get(baseUrl +`/cad/api/v2/event/${id}`, {
+            headers: {
+              Authorization: toToken,
+            },
+          }).then(((res:any)=>{
+            if(res?.data !== null){
+              setCurrentAssignedEvent([res?.data])
+            }
+            console.log(res.data,"res datata");
+        })) 
+        } catch(error) {
+          console.log('error eventsss', error);
+        }
+      }
+    } 
+    getCurrentAssignedEvent();
+  },[AsyncStorage.getItem("user")]);
 
   useEffect(() => {
     events();
-  },[]);
-
-  console.log(eventData, "eventData");
-  
+  },[])
 
   useEffect(() => {
     if (eventData && eventData?.length > 0) {
@@ -62,7 +89,7 @@ const Events = () => {
     if (eventData) {
       if(searchQuery){
         const searchedEvents = eventData?.filter((event:any) =>
-          (event?.agencyEventTypeCode?.toLowerCase() === searchQuery.toLowerCase() || event?.agencyEventSubtypeCode?.toLowerCase() === searchQuery.toLowerCase()) &&
+          (event?.agencyEventTypeCode?.toLowerCase().includes(searchQuery.toLowerCase()) || event?.agencyEventSubtypeCode?.toLowerCase().includes(searchQuery.toLowerCase())) &&
           event?.statusCode === 7
         );
         setPendingEvents([...searchedEvents])
@@ -84,7 +111,7 @@ const Events = () => {
 
   const renderTabContent = (activeTab: string) => {
     if (activeTab === "Report") {
-      return <Report dispatchEvents={dispatchEvents} />;
+      return <Report dispatchEvents={dispatchEvents} currentAssignedEvent={currentAssignedEvent}/>;
     } else if (activeTab === "Events") {
       return (
         <AllEvents data={pendingEvents}/>

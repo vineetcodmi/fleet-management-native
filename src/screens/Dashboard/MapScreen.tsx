@@ -27,6 +27,7 @@ import {useAuth} from '../../context/Auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { STATUS_CODE_COLOR, STATUS_CODE_ICON } from '../../constant/statusCodeConstant';
 import { Image } from 'react-native';
+import DispatchNotifications from '../Notification/DispatchNotification';
 interface Marker {
   id: string;
   coordinate: [number, number];
@@ -48,6 +49,8 @@ const MapScreen = ({navigation}:any) => {
   const [modalVisibleStatusCode, setModalVisibleStatusCode] = useState(false);
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [unitData, setUnitData] = useState<UnitData | null>();
+  const [dispatchedEvent, setDispatchedEvent] = useState<any>(null);
+  const [showNotification, setshowNotification] = useState(false);
 
   // useEffect(() => {
   //   if(user){
@@ -120,6 +123,45 @@ const MapScreen = ({navigation}:any) => {
     getUnitLiveLocation();
     return () => clearInterval(interval);
   },[]);
+
+  const closeNotificationModal = () => {
+    setshowNotification(false);
+  };
+
+  useEffect(() => {
+    const getUnitDispatch = async() => {
+      const unit =  await AsyncStorage.getItem("user");
+      const loggedUnit = JSON.parse(unit || "");
+      console.log(loggedUnit,"hh");
+      
+      if(loggedUnit?.status === 7){
+        if(loggedUnit?.assignedAgencyEventId){
+          await getDispatchEvent(loggedUnit?.assignedAgencyEventId);
+        }
+      }
+    } 
+    getUnitDispatch();
+  },[])
+
+  const getDispatchEvent = async (id: string | null) => {
+    try {
+      const toToken = `Bearer ${token}`;
+      axios
+        .get(baseUrl + `/cad/api/v2/event/${id}`, {
+          headers: {
+            Authorization: toToken,
+          },
+        })
+        .then(res => {
+          console.log(res.data,"dispatch data");
+          setDispatchedEvent(res.data);
+          getUser(user?.unitId, token)
+          setshowNotification(true);
+        });
+    } catch (error) {
+      console.log(error, 'error');
+    }
+  };
 
   const getCurrentLocation = async () => {
     try {
@@ -565,6 +607,16 @@ const MapScreen = ({navigation}:any) => {
           </View>
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showNotification}
+      >
+        <DispatchNotifications
+          dispatchData={dispatchedEvent}
+          closeModal={closeNotificationModal}
+        />
+      </Modal>
     </View>
   );
 };

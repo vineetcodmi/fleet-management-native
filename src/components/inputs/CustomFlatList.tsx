@@ -28,8 +28,9 @@ const FlatListData = ({ data }: any) => {
   const [ismodalVisible, setIsModalVisible] = useState(false);
 
   const getUnitStatus = (unit: any) => {
+    
     const currentStatus = eventStatusCode?.filter(
-      (status: any) => status?.id === unit?.status
+      (status: any) => status?.id === unit?.statusCode
     )?.[0];
     return currentStatus;
   };
@@ -190,8 +191,8 @@ const FlatListData = ({ data }: any) => {
                   color={colors.pendingIconColor}
                   size={17}
                 />
-                <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                  Pending
+                <Text style={{ marginLeft: 7, width: "70%", color: colors.textBlueColor }}>
+                  {getUnitStatus(item)?.status || "-"}
                 </Text>
               </View>
               <View style={styles.POcontainer}>
@@ -324,6 +325,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",
+    flexWrap: "wrap"
   },
   POcontainer: {
     width: "20%",

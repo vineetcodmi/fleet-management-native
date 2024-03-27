@@ -6,12 +6,14 @@ import moment from "moment";
 import { OneSignal } from "react-native-onesignal";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../context/Auth";
+import Sound from "react-native-sound";
 
 const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
   const {user} = useAuth();
   const navigation = useNavigation();
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [notificationSound, setNotificationSound] = useState<Sound | null>(null);
 
   useEffect(() => {
     const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
@@ -26,6 +28,25 @@ const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
       setLongitude(lng);
     }
   }, [dispatchData]);
+
+  useEffect(() => {
+    const sound = new Sound("notification_sound.wav", Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log("Failed to load the sound", error);
+        return;
+      }
+      sound.setNumberOfLoops(-1);
+      sound.play();
+      setNotificationSound(sound);
+    });
+
+    return () => {
+      if (notificationSound) {
+        notificationSound.stop();
+        notificationSound.release();
+      }
+    };
+  }, []);
   
 
   const closeModalSound = () => {
@@ -36,6 +57,10 @@ const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
     //   // notificationSound.release();
     //   console.log("After releasing sound: ", notificationSound);
     // }
+    if (notificationSound) {
+      notificationSound.stop();
+      notificationSound.release();
+    }
     navigation.navigate("Event", { item: dispatchData, isDispatch: true })
     closeModal();
   };

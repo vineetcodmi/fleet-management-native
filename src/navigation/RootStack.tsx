@@ -27,6 +27,7 @@ import FieldEvents from "../screens/Dashboard/FieldEvents";
 import { EventsProvider } from "../context/Events";
 import { baseUrl } from "../config";
 import ClearEvent from "../screens/Dashboard/ClearEvent";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 
@@ -80,15 +81,7 @@ const RootStack = () => {
     // );
   });
 
-  // useEffect(() => {
-  //   if(user?.status === 7){
-  //     getDispatchEvent("P07032400001")
-  //   }
-  // },[])
-
   const getDispatchEvent = async (id: string | null) => {
-    console.log(id,"dispatch id");
-    
     try {
       const toToken = `Bearer ${token}`;
       axios
@@ -109,20 +102,23 @@ const RootStack = () => {
   };
 
   const saveDevice = async (device: any) => {
-    console.log(device,"devicee");
+    console.log("in save device", device);
     try {
       const header = {
         headers: {
           "Content-Type": `application/json`,
         },
       };
-      const response = await axios.post(
-        `https://CADAPP.up112.in/api/users`,
-        device,
-        header
-      );
-      console.log(response?.data, device?.deviceId,"responseeee");
-      return response;
+      if(device?.deviceId && device?.unitId){
+        const response = await axios.post(
+          `https://CADAPP.up112.in/api/users`,
+          device,
+          header
+        );
+        console.log("device", response?.data);
+      } else {
+        Alert.alert("Device or Unit Id missing");
+      }
     } catch (error) {
       console.error("Error saving device:", error);
     }
@@ -133,16 +129,24 @@ const RootStack = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      const deviceId =
-        OneSignal.User?.pushSubscription?.getPushSubscriptionId();
-      const data = {
-        deviceId: deviceId,
-        unitId: user?.unitId,
-      };
-      saveDevice(data);
+    console.log("inside");
+    
+    const fetchDevice = async() => {
+      const userData = await AsyncStorage.getItem("user");
+      const data = JSON.parse(userData || "")
+      if (data) {
+        const deviceId =
+          OneSignal.User?.pushSubscription?.getPushSubscriptionId();
+        const unitId = data?.unitId;
+        const deviceData = {
+          deviceId: deviceId,
+          unitId: unitId,
+        };
+        saveDevice(deviceData);
+      }
     }
-  }, [user]);
+    fetchDevice();
+  }, [AsyncStorage.getItem("user")]);
 
   return (
    <EventsProvider>
@@ -297,7 +301,6 @@ const RootStack = () => {
         <DispatchNotifications
           dispatchData={dispatchedEvent}
           closeModal={closeModal}
-          notificationSound={notificationSoundPlay}
         />
       </Modal>
       </NavigationContainer>

@@ -268,132 +268,69 @@ const MapMyIndia = ({
           coordinate={[user?.longitude || 78,user?.latitude || 30]}
         >
           {createCurrentLocationIcon()}
-          </MapmyIndiaGL.PointAnnotation>
+        </MapmyIndiaGL.PointAnnotation>
 
-         {(activeTab === 'All' || activeTab === 'Events') && ( <>
-          {eventClusteredData?.map((data: any, index: number) => {
-              if (data?.markers?.length > 1) {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`eventclustermarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createEventClusterIcon(data)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              } else {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`eventsmarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data?.markers?.[0]?.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createEventIcon(data, data?.markers?.[0]?.id)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              }
-            })}
-          </>)}
-          {(activeTab === 'All' || activeTab === 'Units') && ( <>
-            {unitClusteredData?.map((data: any, index: number) => {
-              if (data?.markers?.length > 1) {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    key={index}
-                    title="xyz"
-                    id={`unitclustermarker-${index}`}
-                    // ref={annotationRef}
-                    coordinate={data.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createUnitClusterIcon(data)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              } else {
-                return (
-                  <MapmyIndiaGL.PointAnnotation
-                    id={`eventsmarker-${index}`}
-                    title="xyz"
-                    // ref={annotationRef}
-                    coordinate={data?.markers?.[0]?.coordinate}
-                    // onSelected={() => handleMarkerEventsClick(Item.id)}
-                  >
-                    {createUnitIcon(data, data?.markers?.[0]?.id)}
-                  </MapmyIndiaGL.PointAnnotation>
-                );
-              }
-            })}
-          </>)}
-        {/* {eventMarker.map(
-          (Item: any) =>
-            (activeTab === 'All' || activeTab === 'Events') && (
-              <MapmyIndiaGL.PointAnnotation
-                key={Item.id}
-                title="xyz"
-                id={Item.id}
-                // ref={annotationRef}
-                coordinate={Item.coordinate}
-                onSelected={() => handleMarkerEventsClick(Item.id)}>
-                <Image
-                  source={require('../../assets/download.jpeg')}
-                  style={{height: 30, width: 30}}
-                />
-                <MapmyIndiaGL.Callout
+        {(activeTab === 'All' || activeTab === 'Events') && ( <>
+        {eventClusteredData?.map((data: any, index: number) => {
+            if (data?.markers?.length > 1) {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
                   title="xyz"
-                  containerStyle={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 2,
-                    backgroundColor: 'red',
-                    marginBottom: 7,
-                    flexShrink: 0,
-                    alignContent: 'center',
-                  }}>
-                  <TouchableOpacity onPress={() => console.log('hellloleolo')}>
-                    <Text style={{color: 'black', textAlign: 'center'}}>3</Text>
-                  </TouchableOpacity>
-                </MapmyIndiaGL.Callout>
-              </MapmyIndiaGL.PointAnnotation>
-            ),
-        )}
-        {unitMarker.map(
-          (Item: any) =>
-            (activeTab === 'All' || activeTab === 'Units') && (
-              <MapmyIndiaGL.PointAnnotation
-                key={Item.id}
-                title="xyz"
-                id={Item.id}
-                coordinate={Item.coordinate}
-                onSelected={() => handleMarkerUnitClick(Item.id)}>
-                <Image
-                  source={require('../../assets/background.png')}
-                  style={{height: 30, width: 30}}
-                />
-                <MapmyIndiaGL.Callout
+                  id={`eventclustermarker-${index}`}
+                  // ref={annotationRef}
+                  coordinate={data.coordinate}
+                  // onSelected={() => handleMarkerEventsClick(Item.id)}
+                >
+                  {createEventClusterIcon(data)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            } else {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
                   title="xyz"
-                  containerStyle={{
-                    height: 30,
-                    width: 30,
-                    borderRadius: 2,
-                    backgroundColor: 'red',
-                    marginBottom: 7,
-                    flexShrink: 0,
-                    alignContent: 'center',
-                  }}>
-                  <TouchableOpacity onPress={() => console.log('hellloleolo')}>
-                    <Text style={{color: 'black', textAlign: 'center'}}>3</Text>
-                  </TouchableOpacity>
-                </MapmyIndiaGL.Callout>
-              </MapmyIndiaGL.PointAnnotation>
-            ),
-        )} */}
+                  id={`eventsmarker-${index}`}
+                  // ref={annotationRef}
+                  coordinate={data?.markers?.[0]?.coordinate}
+                  // onSelected={() => handleMarkerEventsClick(Item.id)}
+                >
+                  {createEventIcon(data, data?.markers?.[0]?.id)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            }
+          })}
+        </>)}
+        {(activeTab === 'All' || activeTab === 'Units') && ( <>
+          {unitClusteredData?.map((data: any, index: number) => {
+            if (data?.markers?.length > 1) {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  key={index}
+                  title="xyz"
+                  id={`unitclustermarker-${index}`}
+                  // ref={annotationRef}
+                  coordinate={data.coordinate}
+                  // onSelected={() => handleMarkerEventsClick(Item.id)}
+                >
+                  {createUnitClusterIcon(data)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            } else {
+              return (
+                <MapmyIndiaGL.PointAnnotation
+                  id={`eventsmarker-${index}`}
+                  title="xyz"
+                  // ref={annotationRef}
+                  coordinate={data?.markers?.[0]?.coordinate}
+                  // onSelected={() => handleMarkerEventsClick(Item.id)}
+                >
+                  {createUnitIcon(data, data?.markers?.[0]?.id)}
+                </MapmyIndiaGL.PointAnnotation>
+              );
+            }
+          })}
+        </>)}
       </MapmyIndiaGL.MapView>
     </View>
   );
