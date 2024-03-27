@@ -65,19 +65,19 @@ const FlatListData = ({ data }: any) => {
     let longitude = "";
   
     if (match) {
-      const [latString, lngString] = match.slice(1);
-      const latParts = latString.split(':').map(parseFloat);
+      const [lngString, latString] = match.slice(1);
       const lngParts = lngString.split(':').map(parseFloat);
+      const latParts = latString.split(':').map(parseFloat);
       latitude = (
         latParts[0] +
         latParts[1] / 60 +
         latParts[2] / 3600
-      ).toFixed(4);
+      ).toFixed(7);
       longitude = (
         lngParts[0] +
         lngParts[1] / 60 +
         lngParts[2] / 3600
-      ).toFixed(4);
+      ).toFixed(7);
     }
     return (
       <View style={styles.container}>
@@ -85,7 +85,7 @@ const FlatListData = ({ data }: any) => {
           <View style={styles.rowContainer}>
             <View style={styles.rowLeft}>
               <Pressable
-                onPress={handleNotificationIcon}
+                // onPress={handleNotificationIcon}
                 style={[
                   styles.notificationIcon,
                   { backgroundColor: item?.notificationAlert || "black" },
@@ -161,7 +161,7 @@ const FlatListData = ({ data }: any) => {
           <View style={styles.callerContainer}>
             <View>
               <Text style={{ color: colors.textBlueColor }}>
-                7989898989
+                {item?.callData?.callerPhoneNumber || "Not available"}
               </Text>
               <Text style={{ color: "#344054" }}>Caller Number</Text>
             </View>
@@ -191,7 +191,7 @@ const FlatListData = ({ data }: any) => {
                   size={17}
                 />
                 <Text style={{ marginLeft: 7, color: colors.textBlueColor }}>
-                  {getUnitStatus(user)?.status}
+                  Pending
                 </Text>
               </View>
               <View style={styles.POcontainer}>
@@ -208,7 +208,7 @@ const FlatListData = ({ data }: any) => {
               </View>
               <View style={styles.dateContainer}>
                 <Text style={{ color: colors.textBlueColor }}>
-                  {moment(item?.createdTime).format("DD/MM/YYYY - HH:mm")}
+                  {moment(item?.createdTime).format("DD/MM/YYYY - HH:mm:ss")}
                 </Text>
               </View>
             </View>

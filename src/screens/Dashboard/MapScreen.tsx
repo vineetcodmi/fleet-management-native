@@ -183,7 +183,7 @@ const MapScreen = ({navigation}:any) => {
     try {
       const toToken = `Bearer ${token}`;
       const [eventResponse, unitResponse] = await Promise.all([
-        axios.get(baseUrl + '/cad/api/v2/event/monitor', {
+        axios.get(baseUrl + '/cad/api/v2/event/monitor'  + `?dispatchGroup=${user?.dispatchGroup}`, {
           headers: {
             Authorization: toToken,
           },
@@ -480,14 +480,14 @@ const MapScreen = ({navigation}:any) => {
         onRequestClose={closeUnitModal}>
         <UnitDetails closeModal={closeUnitModal} data={unitData} />
       </Modal>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisibleStatusCode}
         onRequestClose={closeUnitModal}
        >
         <StatusCodesComponent closeModal={closeModalStatusCode} statusCodeData={unitsStatusCode}/>
-      </Modal>
+      </Modal> */}
       <View
         style={{
           position: 'absolute',
@@ -521,8 +521,9 @@ const MapScreen = ({navigation}:any) => {
             name="refresh"
             size={20}
             color={colors.grayBorderColor}
+            onPress={() => getUser(user?.unitId, token)}
           />
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
            onPress={()=>setModalVisibleStatusCode(true)}
             style={{
               height: 35,
@@ -541,7 +542,7 @@ const MapScreen = ({navigation}:any) => {
               size={20}
               color={colors.grayBorderColor}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View
             style={{

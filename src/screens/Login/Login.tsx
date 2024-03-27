@@ -22,7 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation, route }: any) => {
   const productionData = route.params;
-  const { login, fetchToken } = useAuth();
+  const { login, fetchToken, user } = useAuth();
   
   const [rememberMe, setRememberMe] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -52,10 +52,13 @@ const LoginScreen = ({ navigation, route }: any) => {
       const unitId = values?.unitId;
       const token = await login(userId, password, unitId);
       if (token) {
-        // getUser(unitId);
         navigation.replace("BottomNavigation");
       } else {
-        console.error("Login failed: Invalid credentials");
+        setLoading(false);
+        Alert.alert(
+          "Login Failed",
+          "Please check your credentials and try again."
+        );
       }
     } catch (error) {
       setLoading(false);
@@ -87,8 +90,10 @@ const LoginScreen = ({ navigation, route }: any) => {
     password: Yup.string().required("Password is required"),
   });
   const handleLinkOutline = async() => {
+    const serverURL = await AsyncStorage.getItem("serverURL");
     await AsyncStorage.removeItem("server")
-    navigation.navigate("ServerLogin");
+    console.log(serverURL, "url");
+    navigation.navigate("ServerLogin", {scannedData: serverURL});
   };
   
   return (
@@ -126,7 +131,7 @@ const LoginScreen = ({ navigation, route }: any) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Enter user ID"
-                  onChangeText={handleChange("userId")}
+                  onChangeText={(value) => handleChange("userId")(value.toUpperCase())}
                   onBlur={handleBlur("userId")}
                   value={values.userId}
                 />
@@ -165,7 +170,7 @@ const LoginScreen = ({ navigation, route }: any) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Enter unit ID"
-                  onChangeText={handleChange("unitId")}
+                  onChangeText={(value) => handleChange("unitId")(value?.toUpperCase())}
                   onBlur={handleBlur("unitId")}
                   value={values.unitId}
                 />

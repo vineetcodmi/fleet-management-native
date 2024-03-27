@@ -12,6 +12,8 @@ import {
   PermissionsAndroid,
   Linking,
   ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
 } from "react-native";
 import colors from "../../utlits/colors";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -27,13 +29,14 @@ import MapBox from "../MapScreen/MapBox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { baseUrl } from "../../config";
+import { STATUS_CODE_ICON } from "../../constant/statusCodeConstant";
 
 interface Event {
   comments: string;
 }
-const General = ({ data }: any) => {
+const General = ({ data, isMapLoading }: any) => {
   const { unitsStatusCode } = useEvents();
-  const { user, token } = useAuth();
+  const { user, token, getUser } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
   const [openCommentModal, setOpenCommentModal] = useState(false);
@@ -44,7 +47,7 @@ const General = ({ data }: any) => {
   const [selectedMap, setSelectedMap] = useState<string>("mapMyIndia");
   const [eventData, setEventData] = useState<Event>();
   const [loading, setLoading] = useState(false);
-  const[isComment,setIscomment]=useState<boolean>();
+  const [isComment, setIscomment] = useState<boolean>();
   // const { latDiff, lngDiff } = extractLatLongDiff(location);
   const [cases, setCases] = useState([
     { label: "Case 1", value: "case1" },
@@ -76,12 +79,12 @@ const General = ({ data }: any) => {
           latParts[0] +
           latParts[1] / 60 +
           latParts[2] / 3600
-        ).toFixed(4);
+        ).toFixed(7);
         const lng = (
           lngParts[0] +
           lngParts[1] / 60 +
           lngParts[2] / 3600
-        ).toFixed(4);
+        ).toFixed(7);
         setMarkersEvents([
           {
             id: data?.agencyEventId,
@@ -161,8 +164,8 @@ const General = ({ data }: any) => {
     setOpenCommentModal(false);
   };
 
-  const handleCall = () => {
-    Linking.openURL(`tel:${data?.callerNumber}`);
+  const handleCall = (number:any) => {
+    Linking.openURL(`tel:${number}`);
   };
 
   useEffect(() => {
@@ -200,6 +203,7 @@ const General = ({ data }: any) => {
         )
         .then((res) => {
           setOpenCommentModal(false);
+          Events();
           setIscomment(!isComment)
         });
     } catch (error) {
@@ -208,7 +212,7 @@ const General = ({ data }: any) => {
     }
   };
 
-  const handleOpenMaps=()=>{
+  const handleOpenMaps = () => {
     if (Platform.OS === "android") {
       Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${markersEvents?.[0]?.coordinate[1]},${markersEvents?.[0]?.coordinate[0]}&origin=${user?.latitude},${user?.longitude}`);
     } else if (Platform.OS === "ios") {
@@ -219,18 +223,18 @@ const General = ({ data }: any) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
       <View style={{ flex: 0.4 }}>
         {/* {selectedMap === "mapMyIndia" ? ( */}
-          <MapMyIndia
-            eventMarker={markersEvents}
-            unitMarker={[]}
-            activeTab={"Events"}
-            handleMarkerEventsClick={() => {}}
-            handleMarkerUnitClick={() => {}}
-            currentLocation={currentLocation}
-            isEventDetail={true}
-          />
+        {!isMapLoading && <MapMyIndia
+          eventMarker={markersEvents}
+          unitMarker={[]}
+          activeTab={"Events"}
+          handleMarkerEventsClick={() => { }}
+          handleMarkerUnitClick={() => { }}
+          currentLocation={currentLocation}
+          isEventDetail={true}
+        />}
         {/* ) : (
           <MapBox
             eventMarker={markersEvents}
@@ -245,7 +249,7 @@ const General = ({ data }: any) => {
       </View>
       <ScrollView style={{ flex: 0.7 }}>
         <View style={styles.container}>
-          <Text style={styles.headerTextStyle}>Events Details</Text>
+          <Text style={styles.headerTextStyle}>Event Details</Text>
           <View
             style={{
               borderWidth: 1,
@@ -290,19 +294,19 @@ const General = ({ data }: any) => {
               <Text style={styles.leftText}>Agency</Text>
               <Text style={styles.rightText}>{data?.agencyId}</Text>
             </View>
-            <View style={styles.details}>
+            <View style={[styles.details, { borderBottomColor: colors.white }]}>
               <Text style={styles.leftText}>DGroup</Text>
               <Text style={styles.rightText}>{data?.dispatchGroup}</Text>
             </View>
-            <View style={styles.details}>
+            {/* <View style={styles.details}>
               <Text style={styles.leftText}>X-Street 1</Text>
               <Text style={styles.rightText}> -</Text>
             </View>
             <View style={[styles.details, { borderBottomColor: colors.white }]}>
               <Text style={styles.leftText}>X-Street 2</Text>
               <Text style={styles.rightText}> -</Text>
-            </View>
-            {markersEvents.map((item:any) => (
+            </View> */}
+            {markersEvents.map((item: any) => (
               <View
                 style={{
                   flexDirection: "row",
@@ -315,7 +319,7 @@ const General = ({ data }: any) => {
                 >
                   <Text style={styles.latLongText}>LAT</Text>
                   <View style={styles.latContainer}>
-                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[0]}</Text>
+                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[1]}</Text>
                   </View>
                 </View>
                 <View
@@ -325,7 +329,7 @@ const General = ({ data }: any) => {
                 >
                   <Text style={styles.latLongText}>LONG</Text>
                   <View style={styles.longContainer}>
-                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[1]}</Text>
+                    <Text style={{ color: colors.textBlueColor }}>{item?.coordinate?.[0]}</Text>
                   </View>
                 </View>
               </View>
@@ -363,7 +367,7 @@ const General = ({ data }: any) => {
                 </View>
                 <View style={styles.dateContainer}>
                   <Text style={{ color: colors.textBlueColor }}>
-                    {moment(data?.createdTime).format("DD/MM/YYYY - HH:mm")}
+                    {moment(data?.createdTime).format("DD/MM/YYYY - HH:mm:ss")}
                   </Text>
                 </View>
               </View>
@@ -373,29 +377,28 @@ const General = ({ data }: any) => {
           <View style={styles.contentContainer}>
             <View style={styles.details}>
               <Text style={styles.leftText}>Source</Text>
-              <Text style={styles.rightText}>{data?.agencyEventTypeCode}</Text>
+              <Text style={styles.rightText}>{data?.callData?.callSource || "-"}</Text>
             </View>
             <View style={styles.details}>
               <Text style={styles.leftText}>Name</Text>
               <Text style={styles.rightText}>
-                {data?.agencyEventSubtypeCode}
+                {data?.callData?.callerName || "-"}
               </Text>
             </View>
             <View style={[styles.details, { borderBottomColor: colors.white }]}>
               <Text style={styles.leftText}>Address</Text>
-              <Text style={styles.rightText}> -</Text>
+              <Text style={styles.rightText}>{data?.callData?.callerStreetAddress || "-"}</Text>
             </View>
             <View style={styles.callerContainer}>
               <View>
                 <Text style={{ color: colors.textBlueColor }}>
-                  {data?.callData?.callerPhoneNumber}
-                  {/* {item?.callData?.callerName} */}
+                  {data?.callData?.callerPhoneNumber || "Not available"}
                 </Text>
                 <Text style={{ color: "#344054" }}>Caller Number</Text>
               </View>
               <Pressable
                 style={styles.iconContainer}
-                onPress={() => handleCall()}
+                onPress={() => handleCall(data?.callData?.callerPhoneNumber)}
               >
                 <MaterialIcons
                   name="call"
@@ -424,7 +427,7 @@ const General = ({ data }: any) => {
               }}
             >
               <Text style={{ color: colors.white, textAlign: "center" }}>
-                3
+                {data?.assignedUnits?.length - 1 || 0}
               </Text>
             </View>
           </View>
@@ -436,72 +439,73 @@ const General = ({ data }: any) => {
               borderColor: colors.grayBorderColor,
             }}
           >
-            <View style={{ padding: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottomWidth: 1,
-                  paddingBottom: 8,
-                  borderBottomColor: colors.grayBorderColor,
-                }}
-              >
-                <View style={styles.rowLeft}>
-                  <View
-                    style={[
-                      styles.notificationIcon,
-                      { backgroundColor: colors.redIcon },
-                    ]}
-                  >
-                    <MaterialIcons
-                      name="notification-important"
-                      color={colors.white}
-                      size={22}
-                    />
-                  </View>
-                  <Text style={styles.notificationText}> LKWO3</Text>
-                </View>
-                <View
-                  style={{
-                    width: "60%",
-                    flexDirection: "row",
-                  }}
-                >
+            {data?.assignedUnits?.length > 0 && data?.assignedUnits?.map((item: any, index: number) => {
+              if(item?.unitId !== user?.unitId){
+                return (
+                  <View key={index} style={{ padding: 8 }}>
                   <View
                     style={{
-                      width: "50%",
-                      borderWidth: 1,
-                      borderColor: colors.grayBorderColor,
-                      borderRadius: 4,
-                      borderTopRightRadius: 0,
-                      borderBottomRightRadius: 0,
-                      padding: 8,
                       flexDirection: "row",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      gap: 3,
+                      borderBottomWidth: 1,
+                      paddingBottom: 8,
+                      borderBottomColor: colors.grayBorderColor,
                     }}
                   >
-                    <MaterialIcons
-                      name="pin-drop"
-                      size={22}
-                      color={colors.redIcon}
-                    />
-                    <Text>Arrived</Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.longContainer,
-                      { width: "50%", alignItems: "center" },
-                    ]}
-                  >
-                    <Text>Police-FRV</Text>
+                    <View style={styles.rowLeft}>
+                      <View
+                        style={[
+                          styles.notificationIcon,
+                          { backgroundColor: colors.redIcon },
+                        ]}
+                      >
+                        <MaterialIcons
+                          name="notification-important"
+                          color={colors.white}
+                          size={22}
+                        />
+                      </View>
+                      <Text style={styles.notificationText}>{item?.unitId}</Text>
+                    </View>
+                    <View
+                      style={{
+                        width: "60%",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: "50%",
+                          borderWidth: 1,
+                          borderColor: colors.grayBorderColor,
+                          borderRadius: 4,
+                          borderTopRightRadius: 0,
+                          borderBottomRightRadius: 0,
+                          padding: 8,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 3,
+                        }}
+                      >
+                        {/* <Image source={STATUS_CODE_ICON?.[item?.status || 0]}/> */}
+                        <Text>{getUnitStatus(item)?.status}</Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.longContainer,
+                          { width: "50%", alignItems: "center" },
+                        ]}
+                      >
+                        <Text>{item?.unitType}</Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
-              </View>
-            </View>
-
-            <View
+                )
+              }
+            })}
+            {/* <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -516,7 +520,7 @@ const General = ({ data }: any) => {
                 <MaterialIcons name="add" size={20} color={colors.white} />
                 <Text style={styles.buttonText}>Self Attach</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
 
           {/* <Text style={styles.headerTextStyle}>Case Number</Text>
@@ -600,7 +604,7 @@ const General = ({ data }: any) => {
               borderColor: colors.grayBorderColor,
             }}
           >
-            <View style={{}}>
+            <View>
               {eventData?.comments && eventData.comments.length > 0 ? (
                 eventData.comments.map((comment: any, index: any) => (
                   <View
@@ -619,7 +623,7 @@ const General = ({ data }: any) => {
                       }}
                     >
                       <View style={styles.rowLeft}>
-                        <View
+                        {/* <View
                           style={{
                             height: 35,
                             width: 35,
@@ -634,12 +638,12 @@ const General = ({ data }: any) => {
                             color={colors.white}
                             size={22}
                           />
-                        </View>
-                        <Text style={styles.notificationText}>{data?.beat}</Text>
+                        </View> */}
+                        <Text style={styles.notificationText}>User Id: {comment.createdEmployeeId}</Text>
                       </View>
                       <Text>
                         {moment(comment?.createdTime).format(
-                          "DD/MM/YYYY - HH:mm"
+                          "DD/MM/YYYY - HH:mm:ss"
                         )}
                       </Text>
                     </View>
@@ -718,7 +722,7 @@ const General = ({ data }: any) => {
             </View>
           </View> */}
 
-          <Text style={styles.headerTextStyle}>Times</Text>
+          {/* <Text style={styles.headerTextStyle}>Times</Text>
           <View style={styles.contentContainer}>
             <View style={styles.details}>
               <Text style={styles.leftText}>&#8226; Dispatched</Text>
@@ -732,7 +736,7 @@ const General = ({ data }: any) => {
               <Text style={styles.leftText}>&#8226; Closed</Text>
               <Text style={styles.rightText}> -</Text>
             </View>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
       <Modal
@@ -741,7 +745,7 @@ const General = ({ data }: any) => {
         visible={openCommentModal}
         onRequestClose={closeOpenCommentModal}
       >
-        <View
+        <KeyboardAvoidingView
           style={{
             flex: 1,
             backgroundColor: "#00000079",
@@ -819,7 +823,7 @@ const General = ({ data }: any) => {
                 alignItems: "center",
               }}
             >
-              <View
+              {/* <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -854,7 +858,7 @@ const General = ({ data }: any) => {
                   setIsCritical((previousState) => !previousState)
                 }
                 value={isCritical}
-              />
+              /> */}
             </View>
             <TouchableOpacity
               onPress={handleSubmit}
@@ -872,9 +876,9 @@ const General = ({ data }: any) => {
               {loading && <ActivityIndicator color="white" />}
             </TouchableOpacity>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </Ke>
   );
 };
 

@@ -5,6 +5,7 @@ import colors from '../../utlits/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from '../../context/Auth';
+import { STATUS_CODE_COLOR } from '../../constant/statusCodeConstant';
 
 MapmyIndiaGL.setMapSDKKey('b7007d03ff55240db694b0b7563fc5c5'); //place your mapsdkKey
 MapmyIndiaGL.setRestAPIKey('b7007d03ff55240db694b0b7563fc5c5'); //your restApiKey
@@ -143,23 +144,27 @@ const MapMyIndia = ({
   };
 
   const createCurrentLocationIcon = () => {
+    
     return (
       <Pressable style={styles.currentLocationWrapper} onPress={() => handleMarkerUnitClick(user?.unitId)}>
-        {!isEventDetail ? <View style={styles.markerWrapper}>
+        <View style={styles.markerWrapper}>
           <View style={styles.clusterMarkerContent}>
             <View
               style={[
                 styles.markerContentTitleBox,
-                {backgroundColor: '#1b4332'},
+                {backgroundColor: STATUS_CODE_COLOR?.[user?.status || 0]},
               ]}>
               <Text style={[styles.clusterMarkerContentTitle, {fontSize: 11}]}>{user?.unitId}</Text>
             </View>
             <Image source={require('../../assets/unitPopup.png')} />
           </View>
-          <View style={styles.unitIconBox}>
+          <View style={[
+            styles.unitIconBox,
+            {backgroundColor: STATUS_CODE_COLOR?.[user?.status || 0]},
+          ]}>
             <Ionicons name="car-outline" size={17} color={colors.white} />
           </View>
-        </View> : <Entypo name="dot-single" size={26} color={colors.black} />}
+        </View>
       </Pressable>
     );
   };
@@ -421,7 +426,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     top: 41.5,
     zIndex: 999,
-    backgroundColor: '#fca311',
+    // backgroundColor: '#fca311',
     height: 26,
     width: 62,
   },

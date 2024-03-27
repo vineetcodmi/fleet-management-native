@@ -24,7 +24,7 @@ const ServerLogin = ({ route, navigation }: any) => {
   const [productionScannedData, setProductionScannedData] = useState("");
   const [loading, setLoading] = useState(false);
   const [educationScannedData, setEducationScannedData] = useState("");
-  const serverKey = route.params?.serverKey;
+  const serverKey = route.params?.serverKey || "production";
   const scannedData = route.params?.scannedData || "";
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const ServerLogin = ({ route, navigation }: any) => {
           const data = res.data;
           const serverData = JSON.stringify(data);
           await AsyncStorage.setItem("server", serverData);
+          await AsyncStorage.setItem("serverURL", server)
           navigation.replace("LoginScreen", { productionData: data });
         }).catch((err:any) => {
           setLoading(false);
@@ -147,8 +148,8 @@ const ServerLogin = ({ route, navigation }: any) => {
                   placeholder="Enter production server url"
                   value={values.production || productionScannedData}
                   onChangeText={(value) => {
-                    setProductionScannedData(value);
-                    handleChange("production")(value);
+                    setProductionScannedData(value.toLowerCase());
+                    handleChange("production")(value.toLowerCase());
                   }}
                   onBlur={handleBlur("production")}
                 />

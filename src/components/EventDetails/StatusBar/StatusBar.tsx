@@ -9,12 +9,12 @@ import { STATUS_CODE_COLOR, STATUS_CODE_ICON } from '../../../constant/statusCod
 import { Image } from 'react-native';
 import { useAuth } from '../../../context/Auth';
 
-const StatusBar = ({unit,event,unitsStatusCode}:any) => {
+const StatusBar = ({unit,event,unitsStatusCode, setIsMapLoading}:any) => {
   const {getUser, unitId, token} = useAuth();
   
   const [modalVisibleStatusCode, setModalVisibleStatusCode] = useState(false);
   const [statusToShow, setStatusToShow] = useState<any>([]);
-  const statusToUpdate = [7,15,8,9,13,14];
+  const statusToUpdate = [7,8,9,15];
 
   const getUnitStatus = (unit: any) => {
     const currentStatus = unitsStatusCode?.filter((status: any) => status?.id === unit?.status)?.[0];
@@ -45,7 +45,7 @@ const StatusBar = ({unit,event,unitsStatusCode}:any) => {
         visible={modalVisibleStatusCode}
         onRequestClose={() => setModalVisibleStatusCode(false)}
       >
-        <StatusModal unit={unit} event={event} closeModal={() => setModalVisibleStatusCode(false)} statusCodeData={statusToShow} />
+        <StatusModal unit={unit} event={event} closeModal={() => setModalVisibleStatusCode(false)} statusCodeData={statusToShow} setIsMapLoading={setIsMapLoading}/>
       </Modal>
       <View
         style={{

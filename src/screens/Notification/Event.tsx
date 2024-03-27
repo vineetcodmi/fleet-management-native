@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { TabController } from "react-native-ui-lib";
 import colors from "../../utlits/colors";
@@ -15,6 +15,7 @@ const Event = ({ navigation, route }: any) => {
   const {unitsStatusCode } = useEvents();
   const data = route.params?.item;
   const isDispatch = route.params?.isDispatch;
+  const [isMapLoading, setIsMapLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if(user){
@@ -50,7 +51,7 @@ const Event = ({ navigation, route }: any) => {
             {data?.agencyEventId}
           </Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 8 }}>
+        {/* <View style={{ flexDirection: "row", gap: 8 }}>
           <View style={styles.icon}>
             <MaterialIcons name="file-open" color="#00526F" size={20} />
           </View>
@@ -60,9 +61,9 @@ const Event = ({ navigation, route }: any) => {
           <View style={styles.icon}>
             <MaterialIcons name="refresh" color="#00526F" size={20} />
           </View>
-        </View>
+        </View> */}
       </View>
-      {[7,8,9,15]?.includes(user?.status || 0) && <StatusBar unit={user} event={data} unitsStatusCode={unitsStatusCode}/>}
+      {[7,8,9,15]?.includes(user?.status || 0) && <StatusBar unit={user} event={data} unitsStatusCode={unitsStatusCode} setIsMapLoading={setIsMapLoading}/>}
       <TabController
       
         items={[
@@ -92,7 +93,7 @@ const Event = ({ navigation, route }: any) => {
         />
         <View style={styles.tabContent}>
           <TabController.TabPage index={0} lazy>
-          <General data={data} />
+          <General data={data} isMapLoading={isMapLoading} />
           </TabController.TabPage>
           <TabController.TabPage index={1} lazy>
             <UnitsTabContent />

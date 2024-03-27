@@ -18,6 +18,7 @@ type User =
       desciption:string;
       latitude: number;
       longitude: number;
+      dispatchGroup: string;
     }
   | undefined;
 
@@ -85,12 +86,12 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       const data  = {
         unitId: unitId
       }
-      axios
+      return axios
         .post(baseUrl + `/cad/api/v2/unit/logon`, data, header)
         .then(async(response) => {
           setUser(response.data);
           await AsyncStorage.setItem("user", JSON.stringify(response.data))
-          console.log(response.data, "data  ===>");
+          return response?.data
         })
         .catch((error) => {
           console.log(error, "Error fetching user data");
@@ -128,12 +129,11 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     try {
       const data = await AsyncStorage.getItem("loggedUserInfo");
       const userData = JSON.parse(data || "");
-      console.log(userData, "kkk");
       
       return await axios
         .post(baseUrl + `/cad/api/v2/token`, userData)
         .then(async(res) => {
-          console.log(res, "ll");
+          console.log(res?.data, "token fetched");
           const token = res?.data;
           setAuthToken(token);
           setToken(token);
@@ -149,11 +149,12 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    if(token && loginUser){
+    // if(token && loginUser){
+      console.log("fetching");
       fetchToken();      
-      const interval = setInterval(fetchToken, 60000);
+      const interval = setInterval(fetchToken, 30000);
       return () => clearInterval(interval);
-    }
+    // }
   }, []);
 
   useEffect(() => {
@@ -190,15 +191,19 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
           console.log(res,"jj");
           
           const token = res.data;
-          setAuthToken(token);
           const userInfo = {
             username,
             password
           };
           await AsyncStorage.setItem("loggedUserInfo", JSON.stringify(userInfo));
-          setToken(token);
-          getUser(unitId, token);
-          return token;
+          const user = await getUser(unitId, token);
+          if(user){
+            setToken(token);
+            setAuthToken(token);
+            return token;
+          } else {
+            return null
+          }
         });
     } catch (error) {
       // console.error("Error logging in:", error);
@@ -259,7 +264,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     
     try {
       await axios
-        .get(baseUrl + "/cad/api/v2/event/monitor", {
+        .get(baseUrl + "/cad/api/v2/event/monitor" + `?dispatchGroup=${user?.dispatchGroup}`, {
           headers: {
             Authorization: toToken,
           },

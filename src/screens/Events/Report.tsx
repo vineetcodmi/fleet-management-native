@@ -43,7 +43,7 @@ const Report = ({dispatchEvents}: any) => {
       <Text style={styles.assignText}>Dispatch Assign</Text>
       {dispatchEvents?.length > 0 
         ? <FlatListData data={dispatchEvents} />
-        : <Text style={{padding: 8}}>There is no any dispatched event</Text>
+        : <Text style={{padding: 8}}>There is no event</Text>
       }
     </ScrollView>
   );

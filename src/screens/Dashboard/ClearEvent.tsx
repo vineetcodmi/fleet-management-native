@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Pressable, Alert, StyleSheet, Text, TextInput, View, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Pressable, Alert, StyleSheet, Text, TextInput, View, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import colors from '../../utlits/colors';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import moment from 'moment';
@@ -110,7 +110,7 @@ const ClearEvent = ({ navigation, route }: any) => {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}>
             <View style={styles.events}>
                 <View
                     style={{
@@ -181,7 +181,7 @@ const ClearEvent = ({ navigation, route }: any) => {
                             </View>
                             <View style={styles.dateContainer}>
                                 <Text style={{ color: colors.textBlueColor }}>
-                                    {moment(event?.createdTime).format("DD/MM / YYYY - HH:mm")}
+                                    {moment(event?.createdTime).format("DD/MM/YYYY - HH:mm:ss")}
                                 </Text>
                             </View>
                         </View>
@@ -245,7 +245,7 @@ const ClearEvent = ({ navigation, route }: any) => {
                     </View>
                 )}
             </Formik>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

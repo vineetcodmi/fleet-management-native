@@ -6,6 +6,7 @@ import FieldEvents from '../screens/Dashboard/FieldEvents';
 import Deatils from '../screens/Dashboard/MoreDetails';
 import Messages from '../screens/Dashboard/Messages';
 import CustomTabBar from '../components/inputs/customTabBar';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,16 +23,22 @@ const BottomNavigation = () => {
         component={Events}
         options={{title: 'My Events', headerShown: false}}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="FieldEvents"
         component={FieldEvents}
-        options={{title: 'Field Events', headerShown: false}}
+        options={{
+          title: 'Field Events', 
+          headerShown: false
+        }}
       />
       <Tab.Screen
         name="Messages"
         component={Messages}
-        options={{title: 'Message', headerShown: false}}
-      />
+        options={{
+          title: 'Message',
+          headerShown: false
+        }}
+      /> */}
       <Tab.Screen
         name="Deatils"
         component={Deatils}

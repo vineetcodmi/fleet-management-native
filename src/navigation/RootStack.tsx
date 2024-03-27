@@ -36,9 +36,16 @@ const RootStack = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [notificationSoundPlay, setNotificationSoundPlay] = useState<any>(null);
   const [dispatchedEvent, setDispatchedEvent] = useState<any>(null);
+  const [dispatchedID, setDispatchedID] = useState<any>(null);
   const handleToggleModal = () => {
     setModalVisible((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    if(dispatchedID){
+      getDispatchEvent(dispatchedID)
+    }
+  },[dispatchedID])
 
   OneSignal.Notifications.addEventListener("click", async(event) => {
     console.log("OneSignal: notification clicked:", event);
@@ -46,7 +53,7 @@ const RootStack = () => {
     const regex = /P\d{11}/;
     const match = text.match(regex);
     const id = match ? match[0] : null;
-    await getDispatchEvent(id)
+    setDispatchedID(id)
   });
 
   OneSignal.Notifications.addEventListener("foregroundWillDisplay", async(event) => {
@@ -55,7 +62,7 @@ const RootStack = () => {
     const regex = /P\d{11}/;
     const match = text.match(regex);
     const id = match ? match[0] : null;
-    await getDispatchEvent(id)
+    setDispatchedID(id)
     // const notificationSound = new Sound(
     //   "notification_sound.wav",
     //   Sound.MAIN_BUNDLE,

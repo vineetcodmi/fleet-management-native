@@ -5,8 +5,10 @@ import colors from "../../utlits/colors";
 import moment from "moment";
 import { OneSignal } from "react-native-onesignal";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../context/Auth";
 
 const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
+  const {user} = useAuth();
   const navigation = useNavigation();
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -15,15 +17,11 @@ const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
     const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
     const match = dispatchData?.location?.match(pattern);
     if (match) {
-      const [latString, lngString] = match.slice(1);
-      const latParts = latString.split(':').map(parseFloat);
+      const [lngString, latString] = match.slice(1);
       const lngParts = lngString.split(':').map(parseFloat);
-      const lat = (latParts[0] + latParts[1] / 60 + latParts[2] / 3600).toFixed(
-        4,
-      );
-      const lng = (lngParts[0] + lngParts[1] / 60 + lngParts[2] / 3600).toFixed(
-        4,
-      );
+      const latParts = latString.split(':').map(parseFloat);
+      const lat = (latParts[0] + latParts[1] / 60 + latParts[2] / 3600).toFixed(7);
+      const lng = (lngParts[0] + lngParts[1] / 60 + lngParts[2] / 3600).toFixed(7);
       setLatitude(lat);
       setLongitude(lng);
     }
@@ -146,7 +144,7 @@ const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
                 </View>
                 <View style={styles.dateContainer}>
                   <Text style={{ color: colors.textBlueColor }}>
-                    {moment(dispatchData?.createdTime).format("DD/MM/YYYY - HH-mm-ss")}
+                    {moment(dispatchData?.createdTime).format("DD/MM/YYYY - HH:mm:ss")}
                   </Text>
                 </View>
               </View>
@@ -159,7 +157,7 @@ const DispatchNotifications = ({ dispatchData, closeModal, data}: any) => {
               color: colors.grayTextColor,
             }}
           >
-            Unit {dispatchData?.beat} has been dispatched to an event
+            Unit {user?.unitId} has been dispatched to an event
           </Text>
           <TouchableOpacity style={styles.button} onPress={closeModalSound}>
             <View

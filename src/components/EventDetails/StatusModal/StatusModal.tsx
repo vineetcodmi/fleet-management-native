@@ -24,7 +24,7 @@ interface statuscode {
     color: string;
 }
 
-const StatusModal = ({ closeModal, statusCodeData, unit, event }: any) => {
+const StatusModal = ({ closeModal, statusCodeData, unit, event, setIsMapLoading }: any) => {
     const { token, getUser } = useAuth();
     const navigation = useNavigation();
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
@@ -35,6 +35,7 @@ const StatusModal = ({ closeModal, statusCodeData, unit, event }: any) => {
 
 
     const handleUpdateUnitStatus = async (item: statuscode) => {
+        setIsMapLoading(true)
         const header = {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -50,10 +51,11 @@ const StatusModal = ({ closeModal, statusCodeData, unit, event }: any) => {
             await axios.post(baseUrl + `/cad/api/v2/unit/${unit?.unitId}/status`, data, header);
             setSelectedItemId(item.id);
             getUser(unit?.unitId, token);
+            setIsMapLoading(false);
             closeModal();
         } catch (err) {
             console.log(err, "ll");
-            
+            setIsMapLoading(false);
             Alert.alert('Something went wrong');
         }
     };

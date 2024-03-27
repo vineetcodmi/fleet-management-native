@@ -16,15 +16,11 @@ const EventsDetails = ({closeModal, data}: any) => {
     const pattern = /LL\(([\d]+:[\d]+:[\d]+\.\d+),([\d]+:[\d]+:[\d]+\.\d+)\)/;
     const match = data?.location?.match(pattern);
     if (match) {
-      const [latString, lngString] = match.slice(1);
-      const latParts = latString.split(':').map(parseFloat);
+      const [lngString, latString] = match.slice(1);
       const lngParts = lngString.split(':').map(parseFloat);
-      const lat = (latParts[0] + latParts[1] / 60 + latParts[2] / 3600).toFixed(
-        4,
-      );
-      const lng = (lngParts[0] + lngParts[1] / 60 + lngParts[2] / 3600).toFixed(
-        4,
-      );
+      const latParts = latString.split(':').map(parseFloat);
+      const lat = (latParts[0] + latParts[1] / 60 + latParts[2] / 3600).toFixed(7);
+      const lng = (lngParts[0] + lngParts[1] / 60 + lngParts[2] / 3600).toFixed(7);
       setLatitude(lat);
       setLongitude(lng);
     }
@@ -124,7 +120,7 @@ const EventsDetails = ({closeModal, data}: any) => {
           <View style={styles.callerContainer}>
             <View>
               <Text style={{color: colors.textBlueColor}}>
-                {data?.callData?.callerPhoneNumber}
+                {data?.callData?.callerPhoneNumber || "Not available"}
               </Text>
               <Text style={{color: '#344054'}}>Caller Number</Text>
             </View>
@@ -168,7 +164,7 @@ const EventsDetails = ({closeModal, data}: any) => {
               </View>
               <View style={styles.dateContainer}>
                 <Text style={{color: colors.textBlueColor}}>
-                  {moment(data?.createdTime).format('DD/MM/YYYY - HH-mm-ss')}
+                  {moment(data?.createdTime).format('DD/MM/YYYY - HH:mm:ss')}
                 </Text>
               </View>
             </View>
